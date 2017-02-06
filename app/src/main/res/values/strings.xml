@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Miner</string>
+    <string name="new_game">New Game</string>
+    <string name="help">Help</string>
+</resources>

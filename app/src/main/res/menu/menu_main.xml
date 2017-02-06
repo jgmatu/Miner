@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/entrada"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/new_game" />
+
+    <item
+        android:id="@+id/help"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/help" />
+</menu>
