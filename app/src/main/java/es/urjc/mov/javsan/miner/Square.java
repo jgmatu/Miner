@@ -5,6 +5,7 @@ package es.urjc.mov.javsan.miner;
  */
 
 public class Square {
+
     private Point point;
     private boolean mine;
     private boolean hidden;

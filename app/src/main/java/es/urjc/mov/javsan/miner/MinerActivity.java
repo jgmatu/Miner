@@ -17,8 +17,8 @@ public class MinerActivity extends Activity {
 
     public static final String TAG = "Mines Debug : ";
     public static final int LOST = -1;
-    public static final int ROWS = 8;
-    public static final int FIELDS = 6;
+    public static final int ROWS = 11;
+    public static final int FIELDS = 7;
     public static final int SEED = 10;
     public static final int EASY = 12;
 
@@ -37,7 +37,9 @@ public class MinerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mines);
+
         mapper = createMinerMap();
+        console = new Console(mapper, this);
     }
 
     private ImageButton initialButton(TableRow.LayoutParams lr, Point point) {
@@ -46,11 +48,11 @@ public class MinerActivity extends Activity {
         // Desing properties...
         imgBut.setPadding(0, 0, 0, 0);
         imgBut.setLayoutParams(lr);
-        imgBut.setScaleType(ImageView.ScaleType.MATRIX);
+        imgBut.setScaleType(ImageView.ScaleType.FIT_XY);
 
         // Core properties...
         imgBut.setImageResource(R.mipmap.hidden);
-        imgBut.setOnClickListener(new EventButt(point));
+        imgBut.setOnClickListener(new EventMap(point));
 
         return imgBut;
     }
@@ -87,10 +89,10 @@ public class MinerActivity extends Activity {
         return map;
     }
 
-    private class EventButt implements View.OnClickListener {
+    private class EventMap implements View.OnClickListener {
         private Point point;
 
-        EventButt(Point newPoint) {
+        EventMap(Point newPoint) {
             point = newPoint;
         }
 
@@ -101,6 +103,7 @@ public class MinerActivity extends Activity {
                 showLost();
                 return;
             }
+            console.updRadar();
             if (mapper.isMine(point)) {
                 // BOOM!!! Square with mine, dead!
                 badMove();

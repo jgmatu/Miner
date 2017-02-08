@@ -1,6 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.Random;
 
@@ -17,28 +18,30 @@ public class MinerMap {
     public final int EASY;
 
     private Square[][] map;
+
     private ImageButton[][] images;
     private int sqHiddens;
     private boolean test;
+    private int seed;
 
     // Create new mine map and generate
     // the matrix images to set all them
     // in the UI method in the activity...
-    MinerMap(int seed) {
+    MinerMap(int s) {
         EASY = 14;
         ROWS = 9;
         FIELDS = 10;
-
-        map = createMinesMap(seed);
+        seed = s;
+        map = createMinesMap(s);
         images = new ImageButton[ROWS][FIELDS];
         test = false;
     }
 
-    MinerMap(int seed, int easy, Point maxPoint, boolean isTest) {
+    MinerMap(int s, int easy, Point maxPoint, boolean isTest) {
         EASY = easy;
         ROWS = maxPoint.getRow();
         FIELDS = maxPoint.getField();
-
+        seed = s;
         map = createMinesMap(seed);
         images = new ImageButton[ROWS][FIELDS];
         test = isTest;
@@ -71,6 +74,10 @@ public class MinerMap {
         this.images[point.getRow()][point.getField()] = image;
     }
 
+    public ImageButton getImage(Point p) {
+        return images[p.getRow()][p.getField()];
+    }
+
     public int getSqHiddens() {
         return sqHiddens;
     }
@@ -80,12 +87,10 @@ public class MinerMap {
             // Decrease to square without mine or
             // set the square to new match..
             this.sqHiddens = sqH;
-
         } else if (sqHiddens == MinerActivity.LOST) {
             // We have got a fail in the game...
             // the player lost the game...
             this.sqHiddens = MinerActivity.LOST;
-
         }
     }
 
@@ -124,6 +129,24 @@ public class MinerMap {
                 if (paint[i][j]) {
                     chImgNoMine(new Point(i, j));
                 }
+            }
+        }
+    }
+
+    public void restart() {
+        Random random = new Random();
+        seed++;
+        random.setSeed(seed);
+
+        sqHiddens = 0;
+        for (int i = 0 ; i < ROWS ; i++) {
+            for (int j = 0 ; j < FIELDS ; j++) {
+                map[i][j] = new Square(new Point(i , j), random.nextLong() % EASY == 0);
+                if (!map[i][j].isMine()) {
+                    sqHiddens++;
+                }
+                images[i][j].setImageResource(R.mipmap.hidden);
+                map[i][j].setHidden(true);
             }
         }
     }
