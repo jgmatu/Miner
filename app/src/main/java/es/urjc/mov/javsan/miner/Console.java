@@ -1,7 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.app.ActionBar;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +7,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.Toast;
 
 /**
@@ -17,25 +14,28 @@ import android.widget.Toast;
  */
 
 public class Console {
+    private enum BUTON {RADAR , RESTART , QUIT};
+
+    private MinerActivity activity;
 
     private MinerMap mapper;
-    private MinerActivity activity;
-    private enum BUTON {RADAR , RESTART , QUIT};
+    private ImageMap images;
     private Radar radar;
 
-    Console(MinerMap map, MinerActivity a) {
+
+    Console(MinerActivity a, MinerMap m , ImageMap i , int nRadar) {
         newRadar(a);
         newRestart(a);
         newQuit(a);
         activity = a;
-        mapper = map;
-        radar = new Radar(map , 2);
+        mapper = m;
+        images = i;
+        radar = new Radar(nRadar);
     }
 
     public void updRadar() {
         radar.decreaseRadar();
-        radar.setRadar(false);
-        radar.active();
+        radar.scan(mapper, images);
     }
 
     private void newRestart(MinerActivity m) {
@@ -116,15 +116,16 @@ public class Console {
             switch (buton) {
                 case RADAR:
                     if (radar.isActive()) {
-                        radar.setRadar(true);
                         radar.active();
+                        radar.scan(mapper , images);
                     } else {
                         disable();
                     }
                     break;
                 case RESTART:
                     mapper.restart();
-                    radar = new Radar(mapper , 2);
+                    images.restart();
+                    radar.restart(2);
                     showMap();
                     break;
                 case QUIT:

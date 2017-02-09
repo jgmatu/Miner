@@ -1,5 +1,6 @@
 package es.urjc.mov.javsan.miner;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,40 +20,78 @@ public class MinerTest {
     private final int ROWS = 8;
     private final int FIELDS = 8;
 
-    private MinerMap mapper;
-
     @Before
     public void create_map() {
         // Mapper of test... the constant are exactly for the test...
-        boolean isTest = true;
-        mapper = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS), isTest);
+        MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
+        mines_isCorrect(map);
+        fill_isCorrect(map);
+        win_game(map);
     }
 
     @Test
-    public void mines_isCorrect() throws Exception {
+    public void lost_game() throws Exception {
+        MinerMap map = new MinerMap(SEED , EASY , new Point(ROWS , FIELDS));
+        move(map , new Point(0 ,1)); // Mine!!!!
+        if (!map.isLostMap()) {
+            fail();
+        }
+    }
+
+    @Test
+    public void random_game() throws Exception {
+        MinerMap map = new MinerMap(3 , EASY, new Point(ROWS , FIELDS));
+        ;
+    }
+
+    private void move(MinerMap map , Point p) {
+        if (map.isMine(p)) {
+            map.setLostGame();
+            return;
+        }
+        if (map.getMines(p) == 0) {
+            map.fill(p);
+        } else {
+            map.modMapNoMine(p);
+        }
+    }
+
+    private void mines_isCorrect(MinerMap map) {
         Point point = new Point(0, 0);
-        Mines mines = new Mines(mapper, point);
+        int mines = map.getMines(point);
 
-        if (mines.getMines() != 2) {
+        if (mines != 2) {
             fail();
         }
-        mines = new Mines(mapper, new Point(1, 2));
-        if (mines.getMines() != 3) {
+        mines = map.getMines(new Point(1, 2));
+        if (mines != 3) {
             fail();
         }
-        mines = new Mines(mapper, new Point(1, 7));
-        if (mines.getMines() != 2) {
+
+        mines = map.getMines(new Point(1, 7));
+        if (mines != 2) {
             fail();
         }
     }
 
-    @Test
-    public void fill_isCorrect() throws Exception {
+    private void fill_isCorrect(MinerMap map) {
         for (int i = 0; i < 4; i++) {
-            mapper.chImgNoMine(new Point(i, 6));
+            map.modMapNoMine(new Point(i, 6));
         }
-        mapper.fill(new Point(4, 4));
-        if (mapper.getSqHiddens() != 5) {
+        map.fill(new Point(4, 4));
+        if (map.getMoves() != 5) {
+            fail();
+        }
+    }
+
+    private void win_game(MinerMap map) {
+        move(map , new Point(4 , 4));
+        move(map , new Point(7 , 2));
+        move(map , new Point(7 , 7));
+        move(map , new Point(1 , 0));
+        move(map , new Point(1 , 7));
+        move(map , new Point(0 , 0));
+        if (!map.isWinner()) {
             fail();
         }
     }

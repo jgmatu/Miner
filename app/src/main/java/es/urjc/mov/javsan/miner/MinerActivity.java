@@ -16,13 +16,14 @@ import android.widget.TableRow;
 public class MinerActivity extends Activity {
 
     public static final String TAG = "Mines Debug : ";
-    public static final int LOST = -1;
-    public static final int ROWS = 11;
-    public static final int FIELDS = 7;
+    public static final int ROWS = 8;
+    public static final int FIELDS = 8;
     public static final int SEED = 10;
     public static final int EASY = 12;
+    public static final int RADARS = 2;
 
     private MinerMap mapper;
+    private ImageMap images;
     private Console console;
 
     // Methods Activity....
@@ -38,8 +39,9 @@ public class MinerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mines);
 
+        images = new ImageMap(new Point(ROWS , FIELDS));
         mapper = createMinerMap();
-        console = new Console(mapper, this);
+        console = new Console(this ,mapper, images, RADARS);
     }
 
     private ImageButton initialButton(TableRow.LayoutParams lr, Point point) {
@@ -59,8 +61,7 @@ public class MinerActivity extends Activity {
 
     private MinerMap createMinerMap() {
         TableLayout table = (TableLayout) findViewById(R.id.map);
-        boolean isTest = false;
-        MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS), isTest);
+        MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
 
         for (int i = 0; i < ROWS; i++) {
             TableRow row = new TableRow(this);
@@ -76,7 +77,7 @@ public class MinerActivity extends Activity {
 
                 // Here we fill out the images of mapper to the botons...
                 ImageButton imgBut = initialButton(lr, point);
-                map.setImage(imgBut, point);
+                images.setImage(imgBut, point); // Set images in ImageMap.
 
                 row.addView(imgBut);
                 row.setGravity(Gravity.CENTER);
@@ -117,7 +118,7 @@ public class MinerActivity extends Activity {
             }
         }
 
-        public void showWin() {
+        private void showWin() {
             // Get image to show for win...
             ImageView img = (ImageView) findViewById(R.id.winner_image);
 
@@ -133,7 +134,7 @@ public class MinerActivity extends Activity {
             table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
         }
 
-        public void showLost() {
+        private void showLost() {
             // Get image to show for Lost...
             ImageView img = (ImageView) findViewById(R.id.boom_image);
 
@@ -150,17 +151,20 @@ public class MinerActivity extends Activity {
         }
 
         private void goodMove() {
-            Mines mines = new Mines(mapper, point);
-            if (mines.clear()) {
-                mapper.fill(point);
+            int mines= mapper.getMines(point);
+            if (mines == 0) {
+                boolean[][] paint = mapper.fill(point);
+                images.fill(mapper , paint);
             } else {
-                mapper.chImgNoMine(point);
+                // Image and Map.
+                images.modImage(point , mines);
+                mapper.modMapNoMine(point);
             }
         }
 
         private void badMove() {
-            mapper.setSqHiddens(LOST);
-            mapper.showMapLost(point);
+            mapper.setLostGame();
+            images.showMapLost(mapper, point); // ImageMap.
         }
         // End button class...
     }

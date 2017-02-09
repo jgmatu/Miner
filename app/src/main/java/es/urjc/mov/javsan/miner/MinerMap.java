@@ -1,7 +1,6 @@
 package es.urjc.mov.javsan.miner;
 
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.util.Log;
 
 import java.util.Random;
 
@@ -16,47 +15,33 @@ public class MinerMap {
     public final int ROWS;
     public final int FIELDS;
     public final int EASY;
+    public static final int LOST = -1;
 
     private Square[][] map;
-
-    private ImageButton[][] images;
-    private int sqHiddens;
-    private boolean test;
+    private int sqMoves;
     private int seed;
 
     // Create new mine map and generate
     // the matrix images to set all them
     // in the UI method in the activity...
-    MinerMap(int s) {
-        EASY = 14;
-        ROWS = 9;
-        FIELDS = 10;
-        seed = s;
-        map = createMinesMap(s);
-        images = new ImageButton[ROWS][FIELDS];
-        test = false;
-    }
-
-    MinerMap(int s, int easy, Point maxPoint, boolean isTest) {
+    MinerMap(int s, int easy, Point maxPoint) {
         EASY = easy;
+        seed = s;
         ROWS = maxPoint.getRow();
         FIELDS = maxPoint.getField();
-        seed = s;
         map = createMinesMap(seed);
-        images = new ImageButton[ROWS][FIELDS];
-        test = isTest;
-    }
-
-    public Square[][] getMap() {
-        return map;
     }
 
     public boolean isLostMap() {
-        return sqHiddens == MinerActivity.LOST;
+        return sqMoves == LOST;
+    }
+
+    public void setLostGame() {
+        this.sqMoves = LOST;
     }
 
     public boolean isWinner() {
-        return sqHiddens == 0;
+        return sqMoves == 0;
     }
 
     public boolean isMine(Point point) {
@@ -67,88 +52,74 @@ public class MinerMap {
         return isOutMap(pMap) || pOff.isCenter();
     }
 
-    public void setImage(ImageButton image, Point point) {
-        // Put the image to the matrix of map images...
-        // This method is called in the creation of UI to
-        // set the images of the miner map class...
-        this.images[point.getRow()][point.getField()] = image;
+    public int getMoves() {
+        return sqMoves;
     }
 
-    public ImageButton getImage(Point p) {
-        return images[p.getRow()][p.getField()];
-    }
-
-    public int getSqHiddens() {
-        return sqHiddens;
-    }
-
-    public void setSqHiddens(int sqH) {
-        if (sqHiddens >= 0) {
-            // Decrease to square without mine or
-            // set the square to new match..
-            this.sqHiddens = sqH;
-        } else if (sqHiddens == MinerActivity.LOST) {
-            // We have got a fail in the game...
-            // the player lost the game...
-            this.sqHiddens = MinerActivity.LOST;
-        }
-    }
-
-    public void chImgNoMine(Point p) {
-        modMap(p);
-        if (!test) {
-            modImages(p);
-        }
-    }
-
-    public void showMapLost(Point p) {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < FIELDS; j++) {
-                Point np = new Point(i, j);
-                if (p.equals(np)) {
-                    // Image of square checked with failed mine...
-                    images[i][j].setImageResource(R.mipmap.mine_fail);
-                    continue;
-                }
-                if (map[i][j].isMine()) {
-                    // Image of square with mine...
-                    images[i][j].setImageResource(R.mipmap.mine);
-                } else {
-                    // Image of square without mine..
-                    chImgNoMine(np);
-                }
-            }
-        }
-    }
-
-    public void fill(Point p) {
+    public boolean[][] fill(Point p) {
         boolean[][] paint = fillOut(p, initPaint());
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < FIELDS; j++) {
+                Point np = new Point(i , j);
                 if (paint[i][j]) {
-                    chImgNoMine(new Point(i, j));
+                    modMapNoMine(np);
                 }
             }
         }
+        return paint;
     }
+
+    public void modMapNoMine(Point p) {
+        if (map[p.getRow()][p.getField()].isHidden()) {
+            // The square is now visible...
+            if (sqMoves > 0) {
+                sqMoves--;
+            }
+        }
+        // The Square is change to visible...
+        map[p.getRow()][p.getField()].visible();
+        //Log.v(TAG , p.toString());
+    }
+
 
     public void restart() {
         Random random = new Random();
         seed++;
         random.setSeed(seed);
 
-        sqHiddens = 0;
+        sqMoves = 0;
         for (int i = 0 ; i < ROWS ; i++) {
             for (int j = 0 ; j < FIELDS ; j++) {
                 map[i][j] = new Square(new Point(i , j), random.nextLong() % EASY == 0);
                 if (!map[i][j].isMine()) {
-                    sqHiddens++;
+                    sqMoves++;
                 }
-                images[i][j].setImageResource(R.mipmap.hidden);
-                map[i][j].setHidden(true);
+                map[i][j].hidden();
             }
         }
+    }
+
+    public int getMines(Point p) {
+        int mines = 0;
+
+        for (int i = 1; i >= -1; i--) {
+            for (int j = 1; j >= -1; j--) {
+                Point pMap = new Point(i + p.getRow(), j + p.getField());
+                Point pOff = new Point(i, j);
+                if (isInvSquare(pMap, pOff)) {
+                    continue;
+                }
+                if (thIsMine(map[p.getRow() + i][p.getField() + j])) {
+                    mines++;
+                }
+            }
+        }
+        return mines;
+    }
+
+    private boolean thIsMine(Square s) {
+        return s.isMine();
     }
 
     private boolean isMaxLim(Point p) {
@@ -167,41 +138,20 @@ public class MinerMap {
         return map[p.getRow()][p.getField()].isHidden();
     }
 
-    private void modImages(Point p) {
-        Mines mines = new Mines(this, p);
-        if (mines.clear()) {
-            // The image is now visible this image has not mines near...
-            images[p.getRow()][p.getField()].setImageResource(R.mipmap.square_yellow);
-        } else {
-            // The image is now visible with mines nears...
-            images[p.getRow()][p.getField()].setImageResource(R.mipmap.mines1 + mines.getMines() - 1);
-        }
-    }
-
-    private void modMap(Point p) {
-        if (map[p.getRow()][p.getField()].isHidden()) {
-            // The square is now visible we change always the
-            // image hidden by other...
-            this.setSqHiddens(sqHiddens - 1);
-        }
-        // The image is change to visible...
-        map[p.getRow()][p.getField()].setHidden(false);
-    }
-
     private Square[][] createMinesMap(int seed) {
         Square[][] m = new Square[ROWS][FIELDS];
         Random random = new Random();
 
         random.setSeed(seed);
-        sqHiddens = 0;
+        sqMoves = 0;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < FIELDS; j++) {
 
                 m[i][j] = new Square(new Point(i, j), random.nextLong() % EASY == 0);
                 if (!m[i][j].isMine()) {
-                    sqHiddens++;
+                    sqMoves++;
                 }
-                m[i][j].setHidden(true);
+                m[i][j].hidden();
             }
         }
         return m;
@@ -223,8 +173,8 @@ public class MinerMap {
             return paint;
         }
         paint[p.getRow()][p.getField()] = true;
-        Mines mines = new Mines(this, p);
-        if (mines.warning()) {
+
+        if (getMines(p) > 0) {
             return paint;
         }
         for (int i = 1; i >= -1; i--) {

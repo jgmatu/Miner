@@ -20,8 +20,12 @@ public class Square {
         return hidden;
     }
 
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void hidden() {
+        this.hidden = true;
+    }
+
+    public void visible() {
+        this.hidden = false;
     }
 
     public boolean isMine() {

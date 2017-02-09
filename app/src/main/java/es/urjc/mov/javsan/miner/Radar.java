@@ -8,16 +8,14 @@ public class Radar {
 
     private int numRadar;
     private boolean radar;
-    private MinerMap mapper;
 
-    Radar (MinerMap map , int nRad) {
+    Radar (int nRad) {
         if (nRad > 0) {
             numRadar = nRad;
         } else {
             numRadar = 1;
         }
         radar = false;
-        mapper = map;
     }
 
     public boolean isActive() {
@@ -31,20 +29,24 @@ public class Radar {
         }
     }
 
-    public void setRadar(boolean radar) {
-        this.radar = radar;
+    public void active() {
+        radar = true;
     }
 
-    public void active() {
+    public void scan(MinerMap mapper, ImageMap images) {
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
             for (int j = 0 ; j < MinerActivity.FIELDS; j++) {
                 Point p = new Point(i , j);
                 if (mapper.isMine(p) && radar) {
-                    mapper.getImage(p).setImageResource(R.mipmap.radar);
+                    images.getImage(p).setImageResource(R.mipmap.radar);
                 } else if (mapper.isMine(p)) {
-                    mapper.getImage(p).setImageResource(R.mipmap.hidden);
+                    images.getImage(p).setImageResource(R.mipmap.hidden);
                 }
             }
         }
+    }
+    public void restart(int nRadar) {
+        numRadar = nRadar;
+        radar = false;
     }
 }
