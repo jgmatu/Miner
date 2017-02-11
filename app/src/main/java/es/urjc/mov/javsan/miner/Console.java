@@ -107,6 +107,7 @@ public class Console {
     private class EventConsole implements View.OnClickListener {
         private BUTON buton;
 
+
         EventConsole(BUTON b) {
             buton = b;
         }

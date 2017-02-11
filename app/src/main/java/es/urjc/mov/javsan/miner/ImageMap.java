@@ -44,6 +44,7 @@ public class ImageMap {
                 }
             }
         }
+        images[0][0].performClick();
     }
 
     public void modImage(Point p , int mines) {

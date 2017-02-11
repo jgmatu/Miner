@@ -2,9 +2,12 @@ package es.urjc.mov.javsan.miner;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -13,7 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-public class MinerActivity extends Activity {
+public class MinerActivity extends AppCompatActivity {
 
     public static final String TAG = "Mines Debug : ";
     public static final int ROWS = 8;
@@ -43,6 +46,21 @@ public class MinerActivity extends Activity {
         mapper = createMinerMap();
         console = new Console(this ,mapper, images, RADARS);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_game:
+                Log.v(MinerActivity.TAG , "NEW!!!");
+                return true;
+            case R.id.help:
+                Log.v(MinerActivity.TAG , "HELP!!!");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     private ImageButton initialButton(TableRow.LayoutParams lr, Point point) {
         ImageButton imgBut = new ImageButton(this);
@@ -75,7 +93,7 @@ public class MinerActivity extends Activity {
             for (int j = 0; j < FIELDS; j++) {
                 Point point = new Point(i, j);
 
-                // Here we fill out the images of mapper to the botons...
+                // Here we fill out the images UI...
                 ImageButton imgBut = initialButton(lr, point);
                 images.setImage(imgBut, point); // Set images in ImageMap.
 
