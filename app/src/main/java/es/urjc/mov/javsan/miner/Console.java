@@ -40,7 +40,7 @@ public class Console {
         res.setOnClickListener(new EventConsole(map , img, BUTON.RESTART));
     }
 
-    public void newRadar (MinerActivity a, MinerMap map , ImageMap img) {
+    public void newRadar (MinerActivity a, MinerMap map, ImageMap img) {
         Button rad = (Button) a.findViewById(R.id.radar);
 
         RelativeLayout.LayoutParams lay = new RelativeLayout.LayoutParams(
@@ -68,8 +68,8 @@ public class Console {
         q.setOnClickListener(new EventConsole(map , img, BUTON.QUIT));
     }
 
-    public void upRadar() {
-        radar.decreaseRadar();;
+    public void disRadar(MinerMap map, ImageMap img) {
+        radar.scan(map , img);
     }
 
     private void showMap () {
@@ -111,12 +111,7 @@ public class Console {
         public void onClick(View v) {
             switch (buton) {
                 case RADAR:
-                    if (radar.isActive()) {
-                        radar.active();
-                        radar.scan(mapper , images);
-                    } else {
-                        radar.disable(activity);
-                    }
+                    setRadar();
                     break;
                 case RESTART:
                     restartGame();
@@ -129,10 +124,19 @@ public class Console {
             }
         }
 
+        private void setRadar() {
+            if (radar.isActive()) {
+                radar.active();
+                radar.scan(mapper , images);
+            } else {
+                radar.disable(activity);
+            }
+        }
+
         private void restartGame() {
             mapper.restart();
             images.restart();
-            radar.restart(2);
+            radar.restart(MinerActivity.RADARS);
             showMap();
         }
     }

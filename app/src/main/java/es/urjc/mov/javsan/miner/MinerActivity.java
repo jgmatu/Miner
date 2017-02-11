@@ -1,6 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,6 +37,22 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.new_game:
+                mapper.restart();
+                images.restart();
+                console.newRadar(this, mapper ,images);
+                return true;
+            case R.id.help:
+                Log.v(MinerActivity.TAG , "HELP!!!");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mines);
@@ -54,21 +69,6 @@ public class MinerActivity extends AppCompatActivity {
         c.newRadar(this , mapper, images);
         return  c;
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.new_game:
-                Log.v(MinerActivity.TAG , "NEW!!!");
-                return true;
-            case R.id.help:
-                Log.v(MinerActivity.TAG , "HELP!!!");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     private ImageButton initialButton(TableRow.LayoutParams lr, Point point) {
         ImageButton imgBut = new ImageButton(this);
@@ -130,7 +130,7 @@ public class MinerActivity extends AppCompatActivity {
                 showLost();
                 return;
             }
-            console.upRadar();
+            console.disRadar(mapper , images);
             if (mapper.isMine(point)) {
                 // BOOM!!! Square with mine, dead!
                 badMove();

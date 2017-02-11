@@ -24,13 +24,6 @@ public class Radar {
         return numRadar > 0;
     }
 
-    public void decreaseRadar() {
-        if (radar && numRadar > 0) {
-            numRadar--;
-            radar = !radar;
-        }
-    }
-
     public void active() {
         radar = true;
     }
@@ -46,6 +39,7 @@ public class Radar {
                 }
             }
         }
+        decreaseRadar();
     }
     public void restart(int nRadar) {
         numRadar = nRadar;
@@ -57,5 +51,12 @@ public class Radar {
         String txt = "The radar is disable...";
         Toast msg = Toast.makeText(a , txt , time);
         msg.show();
+    }
+
+    private void decreaseRadar() {
+        if (radar && numRadar > 0) {
+            numRadar--;
+            radar = !radar;
+        }
     }
 }
