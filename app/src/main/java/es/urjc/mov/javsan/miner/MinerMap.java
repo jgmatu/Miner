@@ -16,6 +16,7 @@ public class MinerMap {
     public final int FIELDS;
     public final int EASY;
     public static final int LOST = -1;
+    public static final int RADIOUS = 1;
 
     private Square[][] map;
     private int sqMoves;
@@ -44,8 +45,11 @@ public class MinerMap {
         return sqMoves == 0;
     }
 
-    public boolean isMine(Point point) {
-        return map[point.getRow()][point.getField()].isMine();
+    public boolean isMine(Point p) {
+        if (isOutMap(p)) {
+            return false;
+        }
+        return map[p.getRow()][p.getField()].isMine();
     }
 
     public boolean isInvSquare(Point pMap, Point pOff) {
@@ -71,6 +75,9 @@ public class MinerMap {
     }
 
     public void modMapNoMine(Point p) {
+        if (isOutMap(p)) {
+            return;
+        }
         if (map[p.getRow()][p.getField()].isHidden()) {
             // The square is now visible...
             if (sqMoves > 0) {
@@ -102,8 +109,8 @@ public class MinerMap {
     public int getMines(Point p) {
         int mines = 0;
 
-        for (int i = 1; i >= -1; i--) {
-            for (int j = 1; j >= -1; j--) {
+        for (int i = RADIOUS; i >= -RADIOUS; i--) {
+            for (int j = RADIOUS; j >= -RADIOUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
                 if (isInvSquare(pMap, pOff)) {
@@ -168,6 +175,9 @@ public class MinerMap {
     }
 
     private boolean[][] fillOut(Point p, boolean[][] paint) {
+        if (isOutMap(p)) {
+            return paint;
+        }
         if (paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p)) {
             return paint;
         }
@@ -176,8 +186,8 @@ public class MinerMap {
         if (getMines(p) > 0) {
             return paint;
         }
-        for (int i = 1; i >= -1; i--) {
-            for (int j = 1; j >= -1; j--) {
+        for (int i = RADIOUS; i >= -RADIOUS; i--) {
+            for (int j = RADIOUS; j >= -RADIOUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
                 if (isInvSquare(pMap, pOff)) {

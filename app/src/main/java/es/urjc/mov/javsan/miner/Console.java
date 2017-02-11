@@ -100,7 +100,7 @@ public class Console {
         private MinerMap mapper;
         private ImageMap images;
         private BUTON buton;
-
+        
         EventConsole(MinerMap map, ImageMap img, BUTON b) {
             mapper = map;
             images = img;
