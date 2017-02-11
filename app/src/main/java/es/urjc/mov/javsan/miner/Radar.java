@@ -1,5 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
+import android.widget.Toast;
+
 /**
  * Created by javi on 6/02/17.
  */
@@ -48,5 +50,12 @@ public class Radar {
     public void restart(int nRadar) {
         numRadar = nRadar;
         radar = false;
+    }
+
+    public void disable (MinerActivity a) {
+        int time = Toast.LENGTH_SHORT;
+        String txt = "The radar is disable...";
+        Toast msg = Toast.makeText(a , txt , time);
+        msg.show();
     }
 }

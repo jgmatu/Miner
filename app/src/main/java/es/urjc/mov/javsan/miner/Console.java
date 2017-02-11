@@ -17,29 +17,17 @@ public class Console {
     private enum BUTON {RADAR , RESTART , QUIT};
 
     private MinerActivity activity;
-
-    private MinerMap mapper;
-    private ImageMap images;
     private Radar radar;
 
 
-    Console(MinerActivity a, MinerMap m , ImageMap i , int nRadar) {
-        newRadar(a);
-        newRestart(a);
-        newQuit(a);
+
+    Console(MinerActivity a , int nRadar) {
         activity = a;
-        mapper = m;
-        images = i;
         radar = new Radar(nRadar);
     }
 
-    public void updRadar() {
-        radar.decreaseRadar();
-        radar.scan(mapper, images);
-    }
-
-    private void newRestart(MinerActivity m) {
-        Button res = (Button) m.findViewById(R.id.restart);
+    public void newRestart (MinerActivity a, MinerMap map , ImageMap img) {
+        Button res = (Button) a.findViewById(R.id.restart);
 
         RelativeLayout.LayoutParams lay = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -49,11 +37,11 @@ public class Console {
 
         res.setText("Restart");
         res.setLayoutParams(lay);
-        res.setOnClickListener(new EventConsole(BUTON.RESTART));
+        res.setOnClickListener(new EventConsole(map , img, BUTON.RESTART));
     }
 
-    private void newRadar(MinerActivity m) {
-        Button rad = (Button) m.findViewById(R.id.radar);
+    public void newRadar (MinerActivity a, MinerMap map , ImageMap img) {
+        Button rad = (Button) a.findViewById(R.id.radar);
 
         RelativeLayout.LayoutParams lay = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -63,11 +51,11 @@ public class Console {
 
         rad.setText("Radar");
         rad.setLayoutParams(lay);
-        rad.setOnClickListener(new EventConsole(BUTON.RADAR));
+        rad.setOnClickListener(new EventConsole(map, img, BUTON.RADAR));
     }
 
-    private void newQuit (MinerActivity m) {
-        Button q = (Button) m.findViewById(R.id.quit);
+    public void newQuit (MinerActivity a, MinerMap map , ImageMap img) {
+        Button q = (Button) a.findViewById(R.id.quit);
 
         RelativeLayout.LayoutParams lay = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -77,37 +65,45 @@ public class Console {
 
         q.setText("Quit");
         q.setLayoutParams(lay);
-        q.setOnClickListener(new EventConsole(BUTON.QUIT));
+        q.setOnClickListener(new EventConsole(map , img, BUTON.QUIT));
+    }
+
+    public void upRadar() {
+        radar.decreaseRadar();;
     }
 
     private void showMap () {
-        hiddenWin();
-        hiddenLost();
-        showMiner();
+        hiddenWin(activity);
+        hiddenLost(activity);
+        showMiner(activity);
     }
 
-    private void hiddenWin() {
-        ImageView img = (ImageView) activity.findViewById(R.id.winner_image);
+    private void hiddenWin(MinerActivity a) {
+        ImageView img = (ImageView) a.findViewById(R.id.winner_image);
         img.setLayoutParams(new RelativeLayout.LayoutParams(0 , 0));
     }
 
-    private void hiddenLost() {
-        ImageView img = (ImageView) activity.findViewById(R.id.boom_image);
+    private void hiddenLost(MinerActivity a) {
+        ImageView img = (ImageView) a.findViewById(R.id.boom_image);
         img.setLayoutParams(new RelativeLayout.LayoutParams(0 , 0));
     }
 
-    private void showMiner() {
+    private void showMiner(MinerActivity a) {
         // Get image to show for win...
-        TableLayout tab = (TableLayout) activity.findViewById(R.id.map);
+        TableLayout tab = (TableLayout) a.findViewById(R.id.map);
         tab.setLayoutParams(new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     private class EventConsole implements View.OnClickListener {
+        private MinerMap mapper;
+        private ImageMap images;
         private BUTON buton;
 
-        EventConsole(BUTON b) {
+        EventConsole(MinerMap map, ImageMap img, BUTON b) {
+            mapper = map;
+            images = img;
             buton = b;
         }
 
@@ -119,14 +115,11 @@ public class Console {
                         radar.active();
                         radar.scan(mapper , images);
                     } else {
-                        disable();
+                        radar.disable(activity);
                     }
                     break;
                 case RESTART:
-                    mapper.restart();
-                    images.restart();
-                    radar.restart(2);
-                    showMap();
+                    restartGame();
                     break;
                 case QUIT:
                     Log.v(MinerActivity.TAG, "QUIT!");
@@ -135,12 +128,12 @@ public class Console {
                     Log.v(MinerActivity.TAG, "Not selected button...");
             }
         }
-    }
 
-    private void disable () {
-        int time = Toast.LENGTH_SHORT;
-        String txt = "The radar is disable...";
-        Toast msg = Toast.makeText(activity , txt , time);
-        msg.show();
+        private void restartGame() {
+            mapper.restart();
+            images.restart();
+            radar.restart(2);
+            showMap();
+        }
     }
 }

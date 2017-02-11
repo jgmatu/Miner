@@ -79,7 +79,6 @@ public class MinerMap {
         }
         // The Square is change to visible...
         map[p.getRow()][p.getField()].visible();
-        //Log.v(TAG , p.toString());
     }
 
 

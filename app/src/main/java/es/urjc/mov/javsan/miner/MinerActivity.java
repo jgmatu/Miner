@@ -41,7 +41,15 @@ public class MinerActivity extends Activity {
 
         images = new ImageMap(new Point(ROWS , FIELDS));
         mapper = createMinerMap();
-        console = new Console(this ,mapper, images, RADARS);
+        console = getConsole();
+    }
+
+    private Console getConsole() {
+        Console c = new Console(this , RADARS);
+        c.newQuit(this , mapper, images);
+        c.newRestart(this , mapper, images);
+        c.newRadar(this , mapper, images);
+        return  c;
     }
 
     private ImageButton initialButton(TableRow.LayoutParams lr, Point point) {
@@ -104,7 +112,7 @@ public class MinerActivity extends Activity {
                 showLost();
                 return;
             }
-            console.updRadar();
+            console.upRadar();
             if (mapper.isMine(point)) {
                 // BOOM!!! Square with mine, dead!
                 badMove();

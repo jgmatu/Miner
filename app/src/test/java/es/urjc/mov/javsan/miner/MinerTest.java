@@ -20,7 +20,7 @@ public class MinerTest {
     private final int ROWS = 8;
     private final int FIELDS = 8;
 
-    @Before
+    @Test
     public void create_map() {
         // Mapper of test... the constant are exactly for the test...
         MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
