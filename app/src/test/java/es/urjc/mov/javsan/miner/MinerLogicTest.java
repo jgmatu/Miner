@@ -52,12 +52,12 @@ public class MinerLogicTest {
         MinerMap map = new MinerMap(seed , easy, new Point(rows , fields));
         Random val = new Random(seed + SEED);
 
-        while (!map.isLostMap() && !map.isWinner()) {
+        while (!map.isEndGame()) {
             // Test map with out of range limits...
             move(map, new Point(val.nextInt(rows + 1), val.nextInt(rows + 1)));
             move(map , new Point(val.nextInt(fields + 1), val.nextInt(fields + 1)));
         }
-        // The map is with all mines... loser moves.
+        // The map is with all mines... loser random moves.
         if (map.isWinner()) {
             fail();
         }

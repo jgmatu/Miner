@@ -124,6 +124,14 @@ public class MinerMap {
         return mines;
     }
 
+    public boolean isEndGame() {
+        return isWinner() || isLostMap();
+    }
+
+    public boolean isHidden(Point p) {
+        return map[p.getRow()][p.getField()].isHidden();
+    }
+
     private boolean thIsMine(Square s) {
         return s.isMine();
     }
@@ -138,10 +146,6 @@ public class MinerMap {
 
     private boolean isOutMap(Point p) {
         return isMaxLim(p) || isMinLim(p);
-    }
-
-    private boolean isHidden(Point p) {
-        return map[p.getRow()][p.getField()].isHidden();
     }
 
     private Square[][] createMinesMap(int seed) {

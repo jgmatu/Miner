@@ -8,12 +8,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 public class MinerActivity extends AppCompatActivity {
 
@@ -28,6 +27,7 @@ public class MinerActivity extends AppCompatActivity {
     private ImageMap images;
     private Console console;
     private ImagesGame imagesGame;
+    private boolean debug;
 
     // Methods Activity....
     @Override
@@ -44,10 +44,15 @@ public class MinerActivity extends AppCompatActivity {
                 newGame();
                 return true;
             case R.id.help:
-                Log.v(MinerActivity.TAG , "HELP!!!");
+                toastMsg("Help!");
                 return true;
-            case R.id.debug:
+            case R.id.debug_win:
+                debug = true;
+                winUI(); // Thread win...
                 return true;
+            case R.id.debug_lost:
+                debug = true;
+                lostUI(); // Thread lost...
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -62,6 +67,27 @@ public class MinerActivity extends AppCompatActivity {
         mapper = createMinerMap();
         console = getConsole();
         imagesGame = new ImagesGame(this);
+        debug = false;
+    }
+
+    private void toastMsg(String txt) {
+        int time = Toast.LENGTH_SHORT;
+        Toast msg = Toast.makeText(this , txt , time);
+        msg.show();
+    }
+
+    private void lostUI() {
+        if (!mapper.isEndGame()) {
+            boolean winner = false;
+            new TestUI(mapper, images, this , winner).run();
+        }
+    }
+
+    private void winUI() {
+        if (!mapper.isEndGame()) {
+            boolean winner = true;
+            new TestUI(mapper, images, this , winner).run();
+        }
     }
 
     private void newGame() {
@@ -132,12 +158,20 @@ public class MinerActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            if (mapper.isLostMap()) {
-                // We have lost the match.. BOOM!!
-                imagesGame.showLost();
-                return;
+            if (mapper.isEndGame()) {
+                showResult();
+            } else {
+                move();
+                console.disableRadar(mapper, images);
             }
-            console.disableRadar(mapper , images);
+        }
+
+        private void showResult() {
+            showLost();
+            showWin();
+        }
+
+        private void move() {
             if (mapper.isMine(point)) {
                 // BOOM!!! Square with mine, dead!
                 badMove();
@@ -145,27 +179,45 @@ public class MinerActivity extends AppCompatActivity {
                 // There is not mine in the square...
                 goodMove();
             }
-            if (mapper.isWinner()) {
+        }
+
+        private void showWin() {
+            if (mapper.isWinner() && !debug) {
                 // Objetivo cumplido, campo de minas despejado!
                 imagesGame.showWin();
             }
         }
+
+        private void showLost() {
+            if (mapper.isLostMap() && !debug) {
+                // We have lost the match.. BOOM!!
+                imagesGame.showLost();
+            }
+        }
+
         private void goodMove() {
             int mines= mapper.getMines(point);
+
             if (mines == 0) {
-                boolean[][] paint = mapper.fill(point);
-                images.fill(mapper , paint);
+                fillEmptySquares();
             } else {
-                // Image and Map.
-                images.modImage(point , mines);
-                mapper.modMapNoMine(point);
+                showSquare(mines);
             }
+        }
+
+        private void fillEmptySquares() {
+            boolean[][] paint = mapper.fill(point);
+            images.fill(mapper , paint);
+        }
+
+        private void showSquare(int mines) {
+            images.modImage(point , mines);
+            mapper.modMapNoMine(point);
         }
 
         private void badMove() {
             mapper.setLostGame();
             images.showMapLost(mapper, point); // ImageMap.
         }
-        // End button class...
     }
 }

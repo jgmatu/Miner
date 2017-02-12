@@ -57,9 +57,13 @@ public class Console {
 
         @Override
         public void onClick(View v) {
-            if (button == BUTTON.RADAR) {
+            if (isRadar()) {
                 setRadar();
             }
+        }
+
+        private boolean isRadar() {
+            return button == BUTTON.RADAR && !mapper.isEndGame();
         }
 
         private void setRadar() {

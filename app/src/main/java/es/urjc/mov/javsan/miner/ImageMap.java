@@ -77,4 +77,8 @@ public class ImageMap {
             }
         }
     }
+
+    public void push(Point p) {
+        images[p.getRow()][p.getField()].performClick();
+    }
 }
