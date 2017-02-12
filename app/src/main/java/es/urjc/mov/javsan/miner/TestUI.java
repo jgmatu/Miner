@@ -5,10 +5,15 @@ package es.urjc.mov.javsan.miner;
  */
 
 public class TestUI {
-    private MinerMap mapper;
-    private ImageMap images;
+    MinerMap mapper;
+    ImageMap images;
 
-    TestUI () {
+    TestUI (MinerMap map, ImageMap imgs, ImagesGame imgGame) {
+        mapper = map;
+        images = imgs;
+    }
+
+    public void debug() {
 
     }
 }

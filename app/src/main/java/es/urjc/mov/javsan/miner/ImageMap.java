@@ -1,6 +1,10 @@
 package es.urjc.mov.javsan.miner;
 
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 
 /**
  * Created by javsan on 8/02/17.
@@ -25,7 +29,6 @@ public class ImageMap {
         return images[p.getRow()][p.getField()];
     }
 
-
     public void showMapLost(MinerMap mapper, Point p) {
         for (int i = 0; i < MinerActivity.ROWS; i++) {
             for (int j = 0; j < MinerActivity.FIELDS; j++) {
@@ -44,7 +47,6 @@ public class ImageMap {
                 }
             }
         }
-        images[0][0].performClick();
     }
 
     public void modImage(Point p , int mines) {

@@ -27,6 +27,7 @@ public class MinerActivity extends AppCompatActivity {
     private MinerMap mapper;
     private ImageMap images;
     private Console console;
+    private ImagesGame imagesGame;
 
     // Methods Activity....
     @Override
@@ -40,12 +41,12 @@ public class MinerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_game:
-                mapper.restart();
-                images.restart();
-                console.newRadar(this, mapper ,images);
+                newGame();
                 return true;
             case R.id.help:
                 Log.v(MinerActivity.TAG , "HELP!!!");
+                return true;
+            case R.id.debug:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -60,12 +61,18 @@ public class MinerActivity extends AppCompatActivity {
         images = new ImageMap(new Point(ROWS , FIELDS));
         mapper = createMinerMap();
         console = getConsole();
+        imagesGame = new ImagesGame(this);
+    }
+
+    private void newGame() {
+        mapper.restart();
+        images.restart();
+        imagesGame.showMap();
+        console.restartRadar(RADARS);
     }
 
     private Console getConsole() {
         Console c = new Console(this , RADARS);
-        c.newQuit(this , mapper, images);
-        c.newRestart(this , mapper, images);
         c.newRadar(this , mapper, images);
         return  c;
     }
@@ -127,10 +134,10 @@ public class MinerActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (mapper.isLostMap()) {
                 // We have lost the match.. BOOM!!
-                showLost();
+                imagesGame.showLost();
                 return;
             }
-            console.disRadar(mapper , images);
+            console.disableRadar(mapper , images);
             if (mapper.isMine(point)) {
                 // BOOM!!! Square with mine, dead!
                 badMove();
@@ -140,42 +147,9 @@ public class MinerActivity extends AppCompatActivity {
             }
             if (mapper.isWinner()) {
                 // Objetivo cumplido, campo de minas despejado!
-                showWin();
+                imagesGame.showWin();
             }
         }
-
-        private void showWin() {
-            // Get image to show for win...
-            ImageView img = (ImageView) findViewById(R.id.winner_image);
-
-            img.setImageResource(R.mipmap.win_image);
-            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            img.setLayoutParams(new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-
-            // Get table...
-            TableLayout table = (TableLayout) findViewById(R.id.map);
-            table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
-        }
-
-        private void showLost() {
-            // Get image to show for Lost...
-            ImageView img = (ImageView) findViewById(R.id.boom_image);
-
-            img.setImageResource(R.mipmap.image_lost);
-            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            img.setLayoutParams(new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-
-            // Get table...
-            TableLayout table = (TableLayout) findViewById(R.id.map);
-            table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
-        }
-
         private void goodMove() {
             int mines= mapper.getMines(point);
             if (mines == 0) {
