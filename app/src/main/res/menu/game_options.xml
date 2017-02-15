@@ -6,8 +6,14 @@
     <item
         android:id="@+id/new_game"
         android:title="@string/new_game" />
-
+    <item
+        android:id="@+id/debug_win"
+        android:title="Debug Win" />
+    <item
+        android:id="@+id/debug_lost"
+        android:title="Debug Lost" />
     <item
         android:id="@+id/help"
         android:title="@string/help" />
+
 </menu>

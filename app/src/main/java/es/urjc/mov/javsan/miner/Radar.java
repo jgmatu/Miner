@@ -1,5 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
+import android.nfc.Tag;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -15,24 +17,28 @@ public class Radar {
         if (nRad > 0) {
             numRadar = nRad;
         } else {
-            numRadar = 1;
+            numRadar = 0;
         }
         radar = false;
     }
 
+    public void disable() { radar = false; };
+    public void active() {radar = true; }
+
+    public boolean isDisable() {
+        return radar == false;
+    }
     public boolean isActive() {
-        return numRadar > 0;
+        return radar == true;
     }
 
-    public void decreaseRadar() {
-        if (radar && numRadar > 0) {
-            numRadar--;
-            radar = !radar;
-        }
+    public boolean aviable() {
+        return numRadar > 0 && isDisable();
     }
 
-    public void active() {
-        radar = true;
+    public void restart(int nRadar) {
+        numRadar = nRadar;
+        radar = false;
     }
 
     public void scan(MinerMap mapper, ImageMap images) {
@@ -46,16 +52,17 @@ public class Radar {
                 }
             }
         }
-    }
-    public void restart(int nRadar) {
-        numRadar = nRadar;
-        radar = false;
+        Log.v(MinerActivity.TAG , String.format("RADAR : %b" , radar));
+        if (radar) {
+            numRadar--;
+        }
     }
 
-    public void disable (MinerActivity a) {
+    public void msgDisable (MinerActivity a) {
         int time = Toast.LENGTH_SHORT;
         String txt = "The radar is disable...";
         Toast msg = Toast.makeText(a , txt , time);
+
         msg.show();
     }
 }
