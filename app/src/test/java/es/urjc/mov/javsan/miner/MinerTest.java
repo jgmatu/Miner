@@ -21,11 +21,7 @@ public class MinerTest {
     private final int FIELDS = 8;
 
     @Test
-<<<<<<< HEAD
-    public void create_map() {
-=======
     public void concrete_map_isCorrect() {
->>>>>>> 78630a8976f94c38e8f5c23e0fd980eee33ad06a
         // Mapper of test... the constant are exactly for the test...
         MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
         mines_isCorrect(map);
@@ -118,7 +114,7 @@ public class MinerTest {
         move(map , new Point(4 , 4));
         move(map , new Point(7 , 2));
         move(map , new Point(7 , 7));
-           move(map , new Point(1 , 0));
+        move(map , new Point(1 , 0));
         move(map , new Point(1 , 7));
         move(map , new Point(0 , 0));
         if (!map.isWinner()) {
