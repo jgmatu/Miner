@@ -8,11 +8,22 @@
     android:orientation="vertical"
     tools:context="es.urjc.mov.javsan.miner.MinerActivity">
 
+
+    <!-- Distribruir los pesos... -->
+
     <TableLayout
-        android:id="@+id/map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"></TableLayout>
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+    </TableLayout>
+
+
+
+    <Button
+            android:id="@+id/radar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <ImageView
         android:id="@+id/winner_image"
@@ -23,10 +34,5 @@
         android:id="@+id/boom_image"
         android:layout_width="0dp"
         android:layout_height="0dp"/>
-
-    <Button
-        android:id="@+id/radar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

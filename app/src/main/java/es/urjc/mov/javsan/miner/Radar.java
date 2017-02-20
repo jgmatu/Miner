@@ -1,6 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.nfc.Tag;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -43,7 +42,7 @@ public class Radar {
 
     public void scan(MinerMap mapper, ImageMap images) {
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
-            for (int j = 0 ; j < MinerActivity.FIELDS; j++) {
+            for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
                 if (mapper.isMine(p) && radar) {
                     images.getImage(p).setImageResource(R.mipmap.radar);

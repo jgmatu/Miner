@@ -1,7 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.os.SystemClock;
-
 import java.util.Random;
 
 /**
@@ -46,11 +44,11 @@ public class TestUI implements Runnable {
         }
     }
 
-    private synchronized void debug() {
+    private void debug() {
         Random m = new Random(MinerActivity.SEED);
 
-        while (!mapper.isWinner() && !mapper.isLostMap()) {
-            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.FIELDS));
+        while (!mapper.isEndGame()) {
+            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.COLUMNS));
             if (winner) {
                 goodMove(mapper, images, p);
             } else {

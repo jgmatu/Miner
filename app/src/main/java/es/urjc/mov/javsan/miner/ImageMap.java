@@ -1,14 +1,6 @@
 package es.urjc.mov.javsan.miner;
 
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-
-/**
- * Created by javsan on 8/02/17.
- */
 
 public class ImageMap {
 
@@ -31,20 +23,14 @@ public class ImageMap {
 
     public void showMapLost(MinerMap mapper, Point p) {
         for (int i = 0; i < MinerActivity.ROWS; i++) {
-            for (int j = 0; j < MinerActivity.FIELDS; j++) {
+            for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point np = new Point(i, j);
                 if (p.equals(np)) {
                     // Image of square checked with failed mine...
                     images[i][j].setImageResource(R.mipmap.mine_fail);
                     continue;
                 }
-                if (mapper.isMine(np)) {
-                    // Image of square with mine...
-                    images[i][j].setImageResource(R.mipmap.mine);
-                } else {
-                    // Image without mine..
-                    modImage(np , mapper.getMines(np));
-                }
+                showImage(mapper , np);
             }
         }
     }
@@ -61,7 +47,7 @@ public class ImageMap {
 
     public void fill (MinerMap mapper, boolean[][] paint) {
         for (int i = 0 ; i < MinerActivity.ROWS; i++) {
-            for (int j = 0 ; j < MinerActivity.FIELDS ; j++) {
+            for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
                 if (paint[i][j]) {
                     modImage(p, mapper.getMines(p));
@@ -72,7 +58,7 @@ public class ImageMap {
 
     public void restart() {
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
-            for (int j = 0; j < MinerActivity.FIELDS; j++) {
+            for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 images[i][j].setImageResource(R.mipmap.hidden);
             }
         }
@@ -80,5 +66,15 @@ public class ImageMap {
 
     public void push(Point p) {
         images[p.getRow()][p.getField()].performClick();
+    }
+
+    private void showImage(MinerMap map, Point p) {
+        if (map.isMine(p)) {
+            // Image of square with mine...
+            images[p.getRow()][p.getField()].setImageResource(R.mipmap.mine);
+        } else {
+            // Image without mine..
+            modImage(p , map.getMines(p));
+        }
     }
 }

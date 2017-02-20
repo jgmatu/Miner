@@ -20,11 +20,7 @@ public class MinerLogicTest {
     private final int FIELDS = 8;
 
     @Test
-<<<<<<< HEAD:app/src/test/java/es/urjc/mov/javsan/miner/MinerTest.java
-    public void concrete_map_isCorrect() {
-=======
     public void concrete_map_isCorrect() throws Exception {
->>>>>>> d5bd2d936ef3d0d78fee13ffec1a86ab058dd7c8:app/src/test/java/es/urjc/mov/javsan/miner/MinerLogicTest.java
         // Mapper of test... the constant are exactly for the test...
         MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
         if (!isGetMines(map)) {
