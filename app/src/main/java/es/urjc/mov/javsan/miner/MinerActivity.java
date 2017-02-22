@@ -13,6 +13,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
+import junit.framework.Test;
+
 public class MinerActivity extends AppCompatActivity {
 
     public static final String TAG = "Mines Debug : ";
@@ -27,6 +29,7 @@ public class MinerActivity extends AppCompatActivity {
     private ImageMap images;
     private Console console;
     private ImagesGame imagesGame;
+    private TestUI test;
     private boolean debug = true;
     private boolean isShowLostMines = false;
 
@@ -35,11 +38,14 @@ public class MinerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.game_options, menu);
+        test = null;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean win = true;
+
         switch (item.getItemId()) {
             case R.id.new_game:
                 newGame();
@@ -48,10 +54,10 @@ public class MinerActivity extends AppCompatActivity {
                 toastMsg("Help!");
                 return true;
             case R.id.debug_win:
-                winUI(); // Thread win...
+                debPlayingUI(win); // Thread win...
                 return true;
             case R.id.debug_lost:
-                lostUI(); // Thread lost...
+                debPlayingUI(!win); // Thread lost...
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -65,6 +71,14 @@ public class MinerActivity extends AppCompatActivity {
             menu.findItem(R.id.debug_lost).setVisible(false);
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (test != null) {
+            test.cancel(true);
+        }
     }
 
     @Override
@@ -84,21 +98,26 @@ public class MinerActivity extends AppCompatActivity {
         msg.show();
     }
 
-    private void lostUI() {
-        if (!mapper.isEndGame()) {
-            boolean winner = false;
-            new TestUI(mapper, images, this, winner).debug();
+    private void debPlayingUI(boolean win) {
+        cancelPrevTestUI();
+        createTest(win);
+    }
+
+    private void cancelPrevTestUI() {
+        if (test != null) {
+            test.cancel(true);
         }
     }
 
-    private void winUI() {
+    private void createTest(boolean win) {
         if (!mapper.isEndGame()) {
-            boolean winner = true;
-            new TestUI(mapper, images, this, winner).debug();
+            test = new TestUI(mapper, images, this, win);
+            test.execute();
         }
     }
 
     private void newGame() {
+        cancelPrevTestUI();
         mapper.restart();
         images.restart();
         console.restartRadar(RADARS);

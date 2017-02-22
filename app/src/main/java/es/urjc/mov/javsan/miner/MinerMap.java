@@ -1,7 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.util.Log;
-
 import java.util.Random;
 
 /**
@@ -16,7 +14,7 @@ public class MinerMap {
     public final int FIELDS;
     public final int EASY;
     public static final int LOST = -1;
-    public static final int RADIOUS = 1;
+    public static final int RADIUS = 1;
 
     private Square[][] map;
     private int sqMoves;
@@ -108,14 +106,14 @@ public class MinerMap {
     public int getMines(Point p) {
         int mines = 0;
 
-        for (int i = RADIOUS; i >= -RADIOUS; i--) {
-            for (int j = RADIOUS; j >= -RADIOUS; j--) {
+        for (int i = RADIUS; i >= -RADIUS; i--) {
+            for (int j = RADIUS; j >= -RADIUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
                 if (isInvSquare(pMap, pOff)) {
                     continue;
                 }
-                if (thIsMine(map[p.getRow() + i][p.getField() + j])) {
+                if (isMine(map[p.getRow() + i][p.getField() + j])) {
                     mines++;
                 }
             }
@@ -131,7 +129,7 @@ public class MinerMap {
         return map[p.getRow()][p.getField()].isHidden();
     }
 
-    private boolean thIsMine(Square s) {
+    private boolean isMine(Square s) {
         return s.isMine();
     }
 
@@ -190,8 +188,9 @@ public class MinerMap {
         if (getMines(p) > 0) {
             return paint;
         }
-        for (int i = RADIOUS; i >= -RADIOUS; i--) {
-            for (int j = RADIOUS; j >= -RADIOUS; j--) {
+
+        for (int i = RADIUS; i >= -RADIUS; i--) {
+            for (int j = RADIUS; j >= -RADIUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
                 if (isInvSquare(pMap, pOff)) {
