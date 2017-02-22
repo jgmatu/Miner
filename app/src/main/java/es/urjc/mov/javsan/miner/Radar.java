@@ -13,10 +13,9 @@ public class Radar {
     private boolean radar;
 
     Radar (int nRad) {
+        numRadar = 0;
         if (nRad > 0) {
             numRadar = nRad;
-        } else {
-            numRadar = 0;
         }
         radar = false;
     }
@@ -51,7 +50,6 @@ public class Radar {
                 }
             }
         }
-        Log.v(MinerActivity.TAG , String.format("RADAR : %b" , radar));
         if (radar) {
             numRadar--;
         }

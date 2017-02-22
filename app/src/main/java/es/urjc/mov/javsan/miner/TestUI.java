@@ -6,7 +6,7 @@ import java.util.Random;
  * Created by javi on 11/02/17.
  */
 
-public class TestUI implements Runnable {
+public class TestUI {
     MinerMap mapper;
     ImageMap images;
     ImagesGame imgGames;
@@ -19,9 +19,17 @@ public class TestUI implements Runnable {
         winner = win;
     }
 
-    @Override
-    public void run() {
-        debug();
+    public void debug() {
+        Random m = new Random(MinerActivity.SEED);
+
+        while (!mapper.isEndGame()) {
+            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.COLUMNS));
+            if (winner) {
+                goodMove(mapper, images, p);
+            } else {
+                badMove(mapper, images , p);
+            }
+        }
     }
 
     private boolean isGoodMove(MinerMap map , Point p) {
@@ -41,19 +49,6 @@ public class TestUI implements Runnable {
     private void badMove(MinerMap map , ImageMap img, Point p) {
         if (isBadMove(map , p)) {
             img.push(p);
-        }
-    }
-
-    private void debug() {
-        Random m = new Random(MinerActivity.SEED);
-
-        while (!mapper.isEndGame()) {
-            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.COLUMNS));
-            if (winner) {
-                goodMove(mapper, images, p);
-            } else {
-                badMove(mapper, images , p);
-            }
         }
     }
 }

@@ -1,8 +1,11 @@
 package es.urjc.mov.javsan.miner;
 
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 /**
  * Created by javi on 6/02/17.
@@ -20,17 +23,19 @@ public class Console {
     }
 
     public void newRadar (MinerActivity a, MinerMap map , ImageMap img) {
-        Button rad = (Button) a.findViewById(R.id.radar);
+        float weigth = 1.0f / (float) MinerActivity.ROWS;
+        TableLayout tab = (TableLayout) a.findViewById(R.id.map);
 
-        RelativeLayout.LayoutParams lay = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lay.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        lay.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT, 0, weigth);
 
-        rad.setText("Radar");
-        rad.setLayoutParams(lay);
-        rad.setOnClickListener(new EventConsole(map, img, BUTTON.RADAR));
+        TableRow row = new TableRow(a);
+
+        row.setLayoutParams(rows);
+        row.setGravity(Gravity.CENTER);
+        row.addView(getButton(a, map, img));
+
+        tab.addView(row);
     }
 
     public void disableRadar(MinerMap map , ImageMap img) {
@@ -42,6 +47,16 @@ public class Console {
 
     public void restartRadar(int nRadar) {
         radar.restart(nRadar);
+    }
+
+    private Button getButton(MinerActivity a , MinerMap map , ImageMap img) {
+        Button rad = new Button(a);
+
+        rad.setText("Radar");
+        rad.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        rad.setOnClickListener(new EventConsole(map, img, BUTTON.RADAR));
+
+        return rad;
     }
 
     private class EventConsole implements View.OnClickListener {
