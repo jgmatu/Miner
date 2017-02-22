@@ -78,11 +78,10 @@ public class MinerMap {
         if (isOutMap(p)) {
             return;
         }
-        if (map[p.getRow()][p.getField()].isHidden()) {
+
+        if (map[p.getRow()][p.getField()].isHidden() && sqMoves > 0) {
             // The square is now visible...
-            if (sqMoves > 0) {
                 sqMoves--;
-            }
         }
         // The Square is change to visible...
         map[p.getRow()][p.getField()].visible();
@@ -154,9 +153,9 @@ public class MinerMap {
 
         random.setSeed(seed);
         sqMoves = 0;
+
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < FIELDS; j++) {
-
                 m[i][j] = new Square(new Point(i, j), random.nextLong() % EASY == 0);
                 if (!m[i][j].isMine()) {
                     sqMoves++;
@@ -178,11 +177,12 @@ public class MinerMap {
         return paint;
     }
 
+    private boolean isEndFillOut(boolean[][] paint , Point p) {
+        return paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p) || isOutMap(p);
+    }
+
     private boolean[][] fillOut(Point p, boolean[][] paint) {
-        if (isOutMap(p)) {
-            return paint;
-        }
-        if (paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p)) {
+        if (isEndFillOut(paint, p)) {
             return paint;
         }
         paint[p.getRow()][p.getField()] = true;
