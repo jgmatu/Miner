@@ -7,33 +7,33 @@ import java.util.Random;
 
 public class TestUI extends AsyncTask<Void, Point, Void> {
 
-    MinerMap mapper;
+    MinerGame mapper;
     ImageMap images;
     ImagesGame imgGames;
     private boolean winner;
 
-    TestUI (MinerMap map, ImageMap img, MinerActivity a, boolean win) {
+    TestUI (MinerGame map, ImageMap img, MinerActivity a, boolean win) {
         mapper = map;
         images = img;
         imgGames = new ImagesGame(a);
         winner = win;
     }
 
-    private boolean isGoodMove(MinerMap map , Point p) {
-        return !map.isMine(p) && map.isHidden(p);
+    private boolean isGoodMove(MinerGame game , Point p) {
+        return !game.isFail(p) && game.isHidden(p);
     }
 
-    private void goodMove(MinerMap map, Point p) {
+    private void goodMove(MinerGame map, Point p) {
         if (isGoodMove(map , p)) {
             publishProgress(p);
         }
     }
 
-    private boolean isBadMove (MinerMap map , Point p) {
-        return map.isMine(p) && map.isHidden(p);
+    private boolean isBadMove (MinerGame map , Point p) {
+        return map.isFail(p) && map.isHidden(p);
     }
 
-    private void badMove(MinerMap map , Point p) {
+    private void badMove(MinerGame map , Point p) {
         if (isBadMove(map , p)) {
             publishProgress(p);
         }

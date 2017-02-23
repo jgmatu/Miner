@@ -21,7 +21,7 @@ public class ImageMap {
         return images[p.getRow()][p.getField()];
     }
 
-    public void showMapLost(MinerMap mapper, Point p) {
+    public void showMapLost(MinerGame game, Point p) {
         for (int i = 0; i < MinerActivity.ROWS; i++) {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point np = new Point(i, j);
@@ -30,7 +30,7 @@ public class ImageMap {
                     images[i][j].setImageResource(R.mipmap.mine_fail);
                     continue;
                 }
-                showImage(mapper , np);
+                showImage(game , np);
             }
         }
     }
@@ -45,12 +45,12 @@ public class ImageMap {
         }
     }
 
-    public void fill (MinerMap mapper, boolean[][] paint) {
+    public void fill (MinerGame game, boolean[][] paint) {
         for (int i = 0 ; i < MinerActivity.ROWS; i++) {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
                 if (paint[i][j]) {
-                    modImage(p, mapper.getMines(p));
+                    modImage(p, game.getMines(p));
                 }
             }
         }
@@ -68,13 +68,13 @@ public class ImageMap {
         images[p.getRow()][p.getField()].performClick();
     }
 
-    private void showImage(MinerMap map, Point p) {
-        if (map.isMine(p)) {
+    private void showImage(MinerGame game, Point p) {
+        if (game.isFail(p)) {
             // Image of square with mine...
             images[p.getRow()][p.getField()].setImageResource(R.mipmap.mine);
         } else {
             // Image without mine..
-            modImage(p , map.getMines(p));
+            modImage(p , game.getMines(p));
         }
     }
 }

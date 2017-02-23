@@ -1,6 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -23,15 +22,12 @@ public class Radar {
     public void disable() { radar = false; };
     public void active() {radar = true; }
 
-    public boolean isDisable() {
-        return radar == false;
-    }
     public boolean isActive() {
-        return radar == true;
+        return radar;
     }
 
     public boolean aviable() {
-        return numRadar > 0 && isDisable();
+        return numRadar > 0 && !isActive();
     }
 
     public void restart(int nRadar) {
@@ -39,13 +35,13 @@ public class Radar {
         radar = false;
     }
 
-    public void scan(MinerMap mapper, ImageMap images) {
+    public void scan(MinerGame game, ImageMap images) {
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
-                if (mapper.isMine(p) && radar) {
+                if (game.isFail(p) && radar) {
                     images.getImage(p).setImageResource(R.mipmap.radar);
-                } else if (mapper.isMine(p)) {
+                } else if (game.isFail(p)) {
                     images.getImage(p).setImageResource(R.mipmap.hidden);
                 }
             }

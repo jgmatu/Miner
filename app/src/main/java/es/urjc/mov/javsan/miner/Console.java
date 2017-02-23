@@ -3,7 +3,6 @@ package es.urjc.mov.javsan.miner;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
@@ -18,7 +17,7 @@ public class Console {
         radar = new Radar(nRadar);
     }
 
-    public void newRadar (MinerActivity a, MinerMap map , ImageMap img) {
+    public void newRadar (MinerActivity a, MinerGame map , ImageMap img) {
         float weigth = 1.0f / (float) MinerActivity.ROWS;
         TableLayout tab = (TableLayout) a.findViewById(R.id.map);
 
@@ -34,7 +33,7 @@ public class Console {
         tab.addView(row);
     }
 
-    public void disableRadar(MinerMap map , ImageMap img) {
+    public void disableRadar(MinerGame map , ImageMap img) {
         if (radar.isActive()) {
             radar.disable();
             radar.scan(map, img);
@@ -45,7 +44,7 @@ public class Console {
         radar.restart(nRadar);
     }
 
-    private Button getButton(MinerActivity a , MinerMap map , ImageMap img) {
+    private Button getButton(MinerActivity a , MinerGame map , ImageMap img) {
         Button rad = new Button(a);
 
         rad.setText("Radar");
@@ -56,11 +55,11 @@ public class Console {
     }
 
     private class EventConsole implements View.OnClickListener {
-        private MinerMap mapper;
+        private MinerGame mapper;
         private ImageMap images;
         private BUTTON button;
 
-        EventConsole(MinerMap map, ImageMap img, BUTTON b) {
+        EventConsole(MinerGame map, ImageMap img, BUTTON b) {
             mapper = map;
             images = img;
             button = b;
@@ -81,7 +80,7 @@ public class Console {
             if (radar.aviable()) {
                 radar.active();
                 radar.scan(mapper, images);
-            } else if (radar.isDisable()) {
+            } else if (!radar.isActive()) {
                 radar.msgDisable(activity);
             }
         }

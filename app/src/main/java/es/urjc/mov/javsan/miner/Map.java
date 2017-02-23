@@ -3,44 +3,46 @@ package es.urjc.mov.javsan.miner;
 import java.util.Random;
 
 /**
- * Created by javi on 5/02/17..
- * MinerMap class... images an map booleans of mines and Squares...
+ * Created by javsan on 23/02/17.
  */
 
-public class MinerMap {
-
-    private static final String TAG = "Miner";
+public class Map {
     public final int ROWS;
     public final int FIELDS;
     public final int EASY;
-    public static final int LOST = -1;
     public static final int RADIUS = 1;
 
     private Square[][] map;
-    private int sqMoves;
+    private Random rand;
     private int seed;
 
-    // Create new mine map and generate
-    // the matrix images to set all them
-    // in the UI method in the activity...
-    MinerMap(int s, int easy, Point maxPoint) {
-        EASY = easy;
+    Map(Point limits, int s, int e) {
+        EASY = e;
+        ROWS = limits.getRow();
+        FIELDS = limits.getField();
+
         seed = s;
-        ROWS = maxPoint.getRow();
-        FIELDS = maxPoint.getField();
-        map = createMinesMap(seed);
+
+        rand = new Random(seed);
+        map = new Square[ROWS][FIELDS];
     }
 
-    public boolean isLostMap() {
-        return sqMoves == LOST;
-    }
+    public int restart() {
+        int moves = 0;
 
-    public void setLostGame() {
-        this.sqMoves = LOST;
-    }
+        rand.setSeed(seed);
+        seed++;
 
-    public boolean isWinner() {
-        return sqMoves == 0;
+        for (int i = 0 ; i < ROWS ; i++) {
+            for (int j = 0 ; j < FIELDS ; j++) {
+                map[i][j] = new Square(new Point(i , j), rand.nextLong() % EASY == 0);
+                if (!map[i][j].isMine()) {
+                    moves++;
+                }
+                map[i][j].hidden();
+            }
+        }
+        return moves;
     }
 
     public boolean isMine(Point p) {
@@ -50,14 +52,6 @@ public class MinerMap {
         return map[p.getRow()][p.getField()].isMine();
     }
 
-    public boolean isInvSquare(Point pMap, Point pOff) {
-        return isOutMap(pMap) || pOff.isCenter();
-    }
-
-    public int getMoves() {
-        return sqMoves;
-    }
-
     public boolean[][] fill(Point p) {
         boolean[][] paint = fillOut(p, initPaint());
 
@@ -65,42 +59,11 @@ public class MinerMap {
             for (int j = 0; j < FIELDS; j++) {
                 Point np = new Point(i , j);
                 if (paint[i][j]) {
-                    modMapNoMine(np);
+                    changeVisible(np);
                 }
             }
         }
         return paint;
-    }
-
-    public void modMapNoMine(Point p) {
-        if (isOutMap(p)) {
-            return;
-        }
-
-        if (map[p.getRow()][p.getField()].isHidden() && sqMoves > 0) {
-            // The square is now visible...
-                sqMoves--;
-        }
-        // The Square is change to visible...
-        map[p.getRow()][p.getField()].visible();
-    }
-
-
-    public void restart() {
-        Random random = new Random();
-        seed++;
-        random.setSeed(seed);
-
-        sqMoves = 0;
-        for (int i = 0 ; i < ROWS ; i++) {
-            for (int j = 0 ; j < FIELDS ; j++) {
-                map[i][j] = new Square(new Point(i , j), random.nextLong() % EASY == 0);
-                if (!map[i][j].isMine()) {
-                    sqMoves++;
-                }
-                map[i][j].hidden();
-            }
-        }
     }
 
     public int getMines(Point p) {
@@ -110,7 +73,7 @@ public class MinerMap {
             for (int j = RADIUS; j >= -RADIUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
-                if (isInvSquare(pMap, pOff)) {
+                if (isInvPoint(pMap, pOff)) {
                     continue;
                 }
                 if (isMine(map[p.getRow() + i][p.getField() + j])) {
@@ -121,8 +84,13 @@ public class MinerMap {
         return mines;
     }
 
-    public boolean isEndGame() {
-        return isWinner() || isLostMap();
+    public void changeVisible (Point p) {
+        if (isOutMap(p)) {
+            return;
+        }
+        if (map[p.getRow()][p.getField()].isHidden()) {
+            map[p.getRow()][p.getField()].visible();
+        }
     }
 
     public boolean isHidden(Point p) {
@@ -145,25 +113,6 @@ public class MinerMap {
         return isMaxLim(p) || isMinLim(p);
     }
 
-    private Square[][] createMinesMap(int seed) {
-        Square[][] m = new Square[ROWS][FIELDS];
-        Random random = new Random();
-
-        random.setSeed(seed);
-        sqMoves = 0;
-
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < FIELDS; j++) {
-                m[i][j] = new Square(new Point(i, j), random.nextLong() % EASY == 0);
-                if (!m[i][j].isMine()) {
-                    sqMoves++;
-                }
-                m[i][j].hidden();
-            }
-        }
-        return m;
-    }
-
     private boolean[][] initPaint() {
         boolean[][] paint = new boolean[ROWS][FIELDS];
 
@@ -176,7 +125,7 @@ public class MinerMap {
     }
 
     private boolean isEndFillOut(boolean[][] paint , Point p) {
-        return paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p) || isOutMap(p);
+        return isOutMap(p) || paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p);
     }
 
     private boolean[][] fillOut(Point p, boolean[][] paint) {
@@ -193,7 +142,7 @@ public class MinerMap {
             for (int j = RADIUS; j >= -RADIUS; j--) {
                 Point pMap = new Point(i + p.getRow(), j + p.getField());
                 Point pOff = new Point(i, j);
-                if (isInvSquare(pMap, pOff)) {
+                if (isInvPoint(pMap, pOff)) {
                     continue;
                 }
                 int row = p.getRow() + i;
@@ -202,5 +151,9 @@ public class MinerMap {
             }
         }
         return paint;
+    }
+
+    private boolean isInvPoint(Point pMap, Point pOff) {
+        return isOutMap(pMap) || pOff.isCenter();
     }
 }
