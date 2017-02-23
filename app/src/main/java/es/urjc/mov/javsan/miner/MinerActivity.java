@@ -22,7 +22,7 @@ public class MinerActivity extends AppCompatActivity {
     public static final int ROWS = 8 + BUTTRADAR;
     public static final int COLUMNS = 8;
     public static final int SEED = 10;
-    public static final int EASY = 12;
+    public static final int EASY = 6;
     public static final int RADARS = 2;
 
     private MinerMap mapper;
@@ -54,7 +54,7 @@ public class MinerActivity extends AppCompatActivity {
                 toastMsg("Help!");
                 return true;
             case R.id.debug_win:
-                debPlayingUI(win); // Thread win...
+                debPlayingUI(win);  // Thread win...
                 return true;
             case R.id.debug_lost:
                 debPlayingUI(!win); // Thread lost...
