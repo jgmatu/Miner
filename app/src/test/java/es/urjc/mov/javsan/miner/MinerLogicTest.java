@@ -22,24 +22,24 @@ public class MinerLogicTest {
     @Test
     public void concrete_map_isCorrect() throws Exception {
         // Mapper of test... the constant are exactly for the test...
-        MinerMap map = new MinerMap(SEED, EASY, new Point(ROWS, FIELDS));
-        if (!isGetMines(map)) {
+        MinerGame game = new MinerGame(new Point(ROWS, FIELDS) , SEED , EASY);
+        if (!isGetMines(game)) {
             fail();
         }
-        fail_fill(map);
-        if (map.getMoves() != 5) {
+        fail_fill(game);
+        if (game.numMoves() != 5) {
             fail();
         }
         // Winner test...
-        move_win(map);
-        if (!map.isWinner()) {
+        move_win(game);
+        if (!game.isWinner()) {
             fail();
         }
     }
 
     @Test
     public void lost_game_isCorrect() throws Exception {
-        MinerMap map = new MinerMap(SEED , EASY , new Point(ROWS , FIELDS));
+        MinerGame map = new MinerGame(new Point(ROWS , FIELDS) , SEED , EASY);
         move(map , new Point(0 ,1)); // Mine!!!!
         if (!map.isLostMap()) {
             fail();
@@ -49,16 +49,16 @@ public class MinerLogicTest {
     @Test
     public void random_game_isCorrect() throws Exception {
         int seed = 3 , rows = 10, fields = 10 , easy = 2;
-        MinerMap map = new MinerMap(seed , easy, new Point(rows , fields));
+        MinerGame game = new MinerGame(new Point(rows , fields), seed , easy);
         Random val = new Random(seed + SEED);
 
-        while (!map.isEndGame()) {
-            // Test map with out of range limits...
-            move(map, new Point(val.nextInt(rows + 1), val.nextInt(rows + 1)));
-            move(map , new Point(val.nextInt(fields + 1), val.nextInt(fields + 1)));
+        while (!game.isEndGame()) {
+            // Test game with out of range limits...
+            move(game, new Point(val.nextInt(rows + 1), val.nextInt(rows + 1)));
+            move(game , new Point(val.nextInt(fields + 1), val.nextInt(fields + 1)));
         }
-        // The map is with all mines... loser random moves.
-        if (map.isWinner()) {
+        // The game is with all mines... loser random moves.
+        if (game.isWinner()) {
             fail();
         }
     }
@@ -66,53 +66,59 @@ public class MinerLogicTest {
     @Test
     public void winGame_isCorrect() throws Exception {
         int seed = 4 , rows = 10, fields = 10 , easy = 3;
-        MinerMap map = new MinerMap(seed , easy , new Point(rows , fields));
+        MinerGame game = new MinerGame(new Point(rows , fields), seed , easy);
 
         for (int i = 0 ; i < rows ; i++) {
             for (int j = 0 ; j < fields; j++) {
                 Point p = new Point(i , j);
-                if (!map.isMine(p)) {
-                    move(map , p);
+                if (!game.isFail(p)) {
+                    move(game , p);
                 }
             }
         }
-        if (!map.isWinner()) {
+        if (!game.isWinner()) {
             fail();
         }
     }
 
-    private void fail_fill(MinerMap map) {
+    private void fail_fill(MinerGame game) {
         // Fill method check.
         for (int i = 0; i < 4; i++) {
-            map.modMapNoMine(new Point(i, 6));
+            game.changeVisible(new Point(i, 6));
         }
-        map.fill(new Point(4, 4));
+        game.empty(new Point(4, 4));
     }
 
-    private void move_win(MinerMap map) {
-        move(map , new Point(4 , 4));
-        move(map , new Point(7 , 2));
-        move(map , new Point(7 , 7));
-        move(map , new Point(1 , 0));
-        move(map , new Point(1 , 7));
-        move(map , new Point(0 , 0));
+    Point[] moves = {
+            new Point(4 , 4),
+            new Point(7 , 2),
+            new Point(7 , 7),
+            new Point(1 , 0),
+            new Point(1 , 7),
+            new Point(0 , 0)
+    };
+
+    private void move_win(MinerGame map) {
+        for (int i = 0 ; i < moves.length ; i++) {
+            move(map, moves[i]);
+        }
     }
 
-    private void move(MinerMap map , Point p) {
-        if (map.isMine(p)) {
-            map.setLostGame();
+    private void move(MinerGame game , Point p) {
+        if (game.isFail(p)) {
+            game.setLostGame();
             return;
         }
-        if (map.getMines(p) == 0) {
-            map.fill(p);
+
+        if (game.getMines(p) == 0) {
+            game.empty(p);
         } else {
-            map.modMapNoMine(p);
+            game.changeVisible(p);
         }
     }
 
-    private boolean isGetMines (MinerMap map) {
-        return map.getMines(new Point(0, 0)) == 2 &&
-                map.getMines(new Point(1, 2)) == 3 &&
+    private boolean isGetMines (MinerGame map) {
+        return map.getMines(new Point(0, 0)) == 2 && map.getMines(new Point(1, 2)) == 3 &&
                 map.getMines(new Point(1, 7)) == 2;
     }
 }
