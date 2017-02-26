@@ -84,7 +84,7 @@ public class MinerLogicTest {
     private void fail_fill(MinerGame game) {
         // Fill method check.
         for (int i = 0; i < 4; i++) {
-            game.changeVisible(new Point(i, 6));
+            game.move(new Point(i, 6));
         }
         game.empty(new Point(4, 4));
     }
@@ -113,7 +113,7 @@ public class MinerLogicTest {
         if (game.getMines(p) == 0) {
             game.empty(p);
         } else {
-            game.changeVisible(p);
+            game.move(p);
         }
     }
 

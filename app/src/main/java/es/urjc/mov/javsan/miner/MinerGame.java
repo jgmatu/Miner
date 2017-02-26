@@ -52,9 +52,11 @@ public class MinerGame {
         return numMoves;
     }
 
-    public void changeVisible(Point p) {
+    public void move(Point p) {
+        if (map.isHidden(p)) {
+            numMoves--;
+        }
         map.changeVisible(p);
-        discountMove();
     }
 
     public void restart() {
@@ -65,7 +67,6 @@ public class MinerGame {
         boolean[][] fill = map.fill(p);
 
         numMoves -= fillMoves(fill);
-
         return fill;
     }
 
@@ -92,11 +93,5 @@ public class MinerGame {
             }
         }
         return moves;
-    }
-
-    private void discountMove() {
-        if (numMoves > 0) {
-            numMoves--;
-        }
     }
 }

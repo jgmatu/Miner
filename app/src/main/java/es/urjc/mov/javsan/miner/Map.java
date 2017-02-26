@@ -2,9 +2,6 @@ package es.urjc.mov.javsan.miner;
 
 import java.util.Random;
 
-/**
- * Created by javsan on 23/02/17.
- */
 
 public class Map {
     public final int ROWS;
@@ -20,7 +17,6 @@ public class Map {
         EASY = e;
         ROWS = limits.getRow();
         FIELDS = limits.getField();
-
         seed = s;
 
         rand = new Random(seed);
@@ -32,7 +28,6 @@ public class Map {
 
         rand.setSeed(seed);
         seed++;
-
         for (int i = 0 ; i < ROWS ; i++) {
             for (int j = 0 ; j < FIELDS ; j++) {
                 map[i][j] = new Square(new Point(i , j), rand.nextLong() % EASY == 0);
@@ -58,7 +53,7 @@ public class Map {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < FIELDS; j++) {
                 Point np = new Point(i , j);
-                if (paint[i][j]) {
+                if (paint[i][j] && !isInvPoint(p , np)) {
                     changeVisible(np);
                 }
             }
@@ -97,22 +92,6 @@ public class Map {
         return map[p.getRow()][p.getField()].isHidden();
     }
 
-    private boolean isMine(Square s) {
-        return s.isMine();
-    }
-
-    private boolean isMaxLim(Point p) {
-        return p.getRow() >= ROWS || p.getField() >= FIELDS;
-    }
-
-    private boolean isMinLim(Point p) {
-        return p.getField() < 0 || p.getRow() < 0;
-    }
-
-    private boolean isOutMap(Point p) {
-        return isMaxLim(p) || isMinLim(p);
-    }
-
     private boolean[][] initPaint() {
         boolean[][] paint = new boolean[ROWS][FIELDS];
 
@@ -125,7 +104,7 @@ public class Map {
     }
 
     private boolean isEndFillOut(boolean[][] paint , Point p) {
-        return isOutMap(p) || paint[p.getRow()][p.getField()] || isMine(p) || !isHidden(p);
+        return isOutMap(p) || isMine(p) || !isHidden(p) || paint[p.getRow()][p.getField()];
     }
 
     private boolean[][] fillOut(Point p, boolean[][] paint) {
@@ -156,4 +135,21 @@ public class Map {
     private boolean isInvPoint(Point pMap, Point pOff) {
         return isOutMap(pMap) || pOff.isCenter();
     }
+
+    private boolean isMine(Square s) {
+        return s.isMine();
+    }
+
+    private boolean isMaxLim(Point p) {
+        return p.getRow() >= ROWS || p.getField() >= FIELDS;
+    }
+
+    private boolean isMinLim(Point p) {
+        return p.getField() < 0 || p.getRow() < 0;
+    }
+
+    private boolean isOutMap(Point p) {
+        return isMaxLim(p) || isMinLim(p);
+    }
+
 }

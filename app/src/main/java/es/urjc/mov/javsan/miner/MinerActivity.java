@@ -17,10 +17,10 @@ public class MinerActivity extends AppCompatActivity {
 
     public static final String TAG = "Mines Debug : ";
     public static final int BUTTRADAR = 1;
-    public static final int ROWS = 8 + BUTTRADAR;
-    public static final int COLUMNS = 8;
-    public static final int SEED = 10;
-    public static final int EASY = 6;
+    public static final int ROWS = 10;
+    public static final int COLUMNS = 10;
+    public static final int SEED = 4;
+    public static final int EASY = 3;
     public static final int RADARS = 2;
 
     private MinerGame game;
@@ -249,7 +249,7 @@ public class MinerActivity extends AppCompatActivity {
         }
 
         private void show(int mines) {
-            game.changeVisible(point);
+            game.move(point);
             images.modImage(point, mines);
         }
     }
