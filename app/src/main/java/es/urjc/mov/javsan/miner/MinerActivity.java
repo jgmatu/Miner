@@ -2,6 +2,7 @@ package es.urjc.mov.javsan.miner;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ public class MinerActivity extends AppCompatActivity {
     private TestUI test;
     private boolean debug = true;
     private boolean isShowLostMines = false;
+    private int seed;
 
     // Methods Activity....
     @Override
@@ -83,11 +85,55 @@ public class MinerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mines);
+        seed = SEED;
 
+        if (savedInstanceState != null) {
+            seed = savedInstanceState.getInt("seed");
+        }
+        createGame(seed);
+
+        Log.v(MinerActivity.TAG, game.toString());
+        if (savedInstanceState != null) {
+            setState(savedInstanceState);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("seed", seed);
+        for (int i = 0 ; i < ROWS ; i++) {
+            for (int j = 0 ; j < COLUMNS ; j++) {
+                Point p = new Point(i , j);
+                int id = i * COLUMNS + j;
+                boolean visible = !game.isHidden(p);
+
+                outState.putBoolean(String.valueOf(id), visible);
+            }
+        }
+    }
+
+    private void createGame(int seed) {
         images = new ImageMap(new Point(ROWS, COLUMNS));
-        game = createMinerMap();
+        game = createMinerMapUI(seed);
         console = getConsole();
         imagesGame = new ImagesGame(this);
+    }
+
+    private void setState(Bundle state) {
+        for (int i = 0 ; i < ROWS ; i++) {
+            for (int j = 0 ; j < COLUMNS ; j++) {
+                Point p = new Point(i , j);
+                int id = i * COLUMNS + j;
+
+                if (state.getBoolean(String.valueOf(id))) {
+                    Log.v(MinerActivity.TAG, String.format("Move point : %s" , p.toString()));
+                    game.move(p);
+                    images.modImage(p , game.getMines(p));
+                }
+            }
+        }
     }
 
     private void toastMsg(String txt) {
@@ -98,7 +144,7 @@ public class MinerActivity extends AppCompatActivity {
 
     private void debPlayingUI(boolean win) {
         cancelPrevTestUI();
-        createTest(win);
+        createTestUI(win);
     }
 
     private void cancelPrevTestUI() {
@@ -107,7 +153,7 @@ public class MinerActivity extends AppCompatActivity {
         }
     }
 
-    private void createTest(boolean win) {
+    private void createTestUI(boolean win) {
         if (!game.isEndGame()) {
             test = new TestUI(game, images, this, win);
             test.execute();
@@ -116,6 +162,7 @@ public class MinerActivity extends AppCompatActivity {
 
     private void newGame() {
         cancelPrevTestUI();
+        seed = game.getSeed();
         game.restart();
         images.restart();
         console.restartRadar(RADARS);
@@ -144,11 +191,11 @@ public class MinerActivity extends AppCompatActivity {
         return imgBut;
     }
 
-    private MinerGame createMinerMap() {
+    private MinerGame createMinerMapUI(int seed) {
         TableLayout table = (TableLayout) findViewById(R.id.map);
-        MinerGame map = new MinerGame(new Point(ROWS, COLUMNS) , SEED , EASY);
+        MinerGame map = new MinerGame(new Point(ROWS, COLUMNS) , seed , EASY);
 
-        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, 0, 1.0f / (float) ROWS);
+        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, 0, 1.0f / (float) (ROWS + BUTTRADAR));
         TableRow.LayoutParams imgDesign = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1.0f / (float) COLUMNS);
 
 
