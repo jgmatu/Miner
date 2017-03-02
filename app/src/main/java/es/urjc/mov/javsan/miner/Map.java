@@ -4,8 +4,9 @@ import java.util.Random;
 
 
 public class Map {
+
     public final int ROWS;
-    public final int FIELDS;
+    public final int COLS;
     public final int EASY;
     public static final int RADIUS = 1;
 
@@ -16,20 +17,18 @@ public class Map {
     Map(Point limits, int s, int e) {
         EASY = e;
         ROWS = limits.getRow();
-        FIELDS = limits.getField();
+        COLS = limits.getField();
         seed = s;
 
         rand = new Random(seed);
-        map = new Square[ROWS][FIELDS];
+        map = new Square[ROWS][COLS];
     }
 
     public int restart() {
         int moves = 0;
 
-        rand.setSeed(seed);
-        seed++;
         for (int i = 0 ; i < ROWS ; i++) {
-            for (int j = 0 ; j < FIELDS ; j++) {
+            for (int j = 0; j < COLS; j++) {
                 map[i][j] = new Square(new Point(i , j), rand.nextLong() % EASY == 0);
                 if (!map[i][j].isMine()) {
                     moves++;
@@ -37,6 +36,9 @@ public class Map {
                 map[i][j].hidden();
             }
         }
+
+        seed++;
+        rand.setSeed(seed);
         return moves;
     }
 
@@ -51,7 +53,7 @@ public class Map {
         boolean[][] paint = fillOut(p, initPaint());
 
         for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < FIELDS; j++) {
+            for (int j = 0; j < COLS; j++) {
                 Point np = new Point(i , j);
                 if (paint[i][j] && !isInvPoint(p , np)) {
                     changeVisible(np);
@@ -92,11 +94,34 @@ public class Map {
         return map[p.getRow()][p.getField()].isHidden();
     }
 
+    @Override
+    public String toString() {
+        String result = "";
+
+        for (int i = 0 ; i < ROWS ; i++) {
+            for (int j = 0; j < COLS; j++) {
+                Point p = new Point(i , j);
+                if (map[i][j].isMine()) {
+                    result += String.format(" %5d ", -1);
+                } else {
+                    result += String.format(" %5d ", getMines(p));
+                }
+            }
+            result += String.format("%c", '\n');
+        }
+
+        return result;
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
     private boolean[][] initPaint() {
-        boolean[][] paint = new boolean[ROWS][FIELDS];
+        boolean[][] paint = new boolean[ROWS][COLS];
 
         for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < FIELDS; j++) {
+            for (int j = 0; j < COLS; j++) {
                 paint[i][j] = false;
             }
         }
@@ -141,7 +166,7 @@ public class Map {
     }
 
     private boolean isMaxLim(Point p) {
-        return p.getRow() >= ROWS || p.getField() >= FIELDS;
+        return p.getRow() >= ROWS || p.getField() >= COLS;
     }
 
     private boolean isMinLim(Point p) {

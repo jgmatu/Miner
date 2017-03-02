@@ -24,7 +24,6 @@ public class Sound {
             public void run() {
                 genTone();
                 handler.post(new Runnable() {
-
                     public void run() {
                         playSound();
                     }

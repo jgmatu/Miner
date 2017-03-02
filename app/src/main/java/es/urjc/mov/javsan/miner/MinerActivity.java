@@ -14,9 +14,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class MinerActivity extends AppCompatActivity {
 
     public static final String TAG = "Mines Debug : ";
+
     public static final int BUTTRADAR = 1;
     public static final int ROWS = 10;
     public static final int COLUMNS = 10;
@@ -90,27 +93,39 @@ public class MinerActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             seed = savedInstanceState.getInt("seed");
         }
-        createGame(seed);
 
-        Log.v(MinerActivity.TAG, game.toString());
+        createGame(seed);
         if (savedInstanceState != null) {
-            setState(savedInstanceState);
+            setStateActivity(savedInstanceState);
+            Log.v(MinerActivity.TAG, String.format("Winner -> %b , Looser -> %b" , game.isWinGame() , game.isLostGame()));
         }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        state.putInt("seed", seed);
+        state.putIntegerArrayList("moves", game.saveMoves());
+        Log.v(MinerActivity.TAG, String.format("Winner -> %b , Looser -> %b" , game.isWinGame() , game.isLostGame()));
+    }
 
-        outState.putInt("seed", seed);
-        for (int i = 0 ; i < ROWS ; i++) {
-            for (int j = 0 ; j < COLUMNS ; j++) {
-                Point p = new Point(i , j);
-                int id = i * COLUMNS + j;
-                boolean visible = !game.isHidden(p);
+    private void setStateActivity(Bundle state) {
+        ArrayList<Integer> moves = state.getIntegerArrayList("moves");
 
-                outState.putBoolean(String.valueOf(id), visible);
+        for (Integer m : moves) {
+            Point p = new Point(m / COLUMNS, m % COLUMNS);
+            if (game.isFail(p)) {
+                Log.v(MinerActivity.TAG, "FAIL!!!!");
+                game.setLostGame(p);
+                images.showMapLost(game, p);
+                break;
             }
+            game.move(p);
+            images.setImageVisible(p , game.getMines(p));
+        }
+
+        if (game.isWinGame()) {
+            imagesGame.showWin();
         }
     }
 
@@ -119,21 +134,6 @@ public class MinerActivity extends AppCompatActivity {
         game = createMinerMapUI(seed);
         console = getConsole();
         imagesGame = new ImagesGame(this);
-    }
-
-    private void setState(Bundle state) {
-        for (int i = 0 ; i < ROWS ; i++) {
-            for (int j = 0 ; j < COLUMNS ; j++) {
-                Point p = new Point(i , j);
-                int id = i * COLUMNS + j;
-
-                if (state.getBoolean(String.valueOf(id))) {
-                    Log.v(MinerActivity.TAG, String.format("Move point : %s" , p.toString()));
-                    game.move(p);
-                    images.modImage(p , game.getMines(p));
-                }
-            }
-        }
     }
 
     private void toastMsg(String txt) {
@@ -241,7 +241,7 @@ public class MinerActivity extends AppCompatActivity {
             console.disableRadar(game, images);
             chkMove();
 
-            if (game.isWinner() && !debug) {
+            if (game.isWinGame() && !debug) {
                 showWin();
             }
         }
@@ -253,7 +253,7 @@ public class MinerActivity extends AppCompatActivity {
 
         private void chkMove() {
             if (game.isFail(point)) {
-                // BOOM!!! Square with mine, dead!
+                // BOOM!!! Square have a mine, dead!
                 badMove();
             } else {
                 // There is not mine in the square...
@@ -262,14 +262,14 @@ public class MinerActivity extends AppCompatActivity {
         }
 
         private void showWin() {
-            if (game.isWinner() && !debug) {
+            if (game.isWinGame() && !debug) {
                 // Objetivo cumplido, campo de minas despejado!
                 imagesGame.showWin();
             }
         }
 
         private void showLost() {
-            if (game.isLostMap() && !debug && isShowLostMines) {
+            if (game.isLostGame() && !debug && isShowLostMines) {
                 // We have lost the match.. BOOM!!
                 imagesGame.showLost();
             }
@@ -280,13 +280,12 @@ public class MinerActivity extends AppCompatActivity {
 
             if (mines == 0) {
                 fill();
-            } else {
-                show(mines);
             }
+            show(mines); // Collateral efects we must show mines only later of fill...
         }
 
         private void badMove() {
-            game.setLostGame();
+            game.setLostGame(point);
             images.showMapLost(game, point); // ImageMap.
             isShowLostMines = true;
         }
@@ -297,7 +296,7 @@ public class MinerActivity extends AppCompatActivity {
 
         private void show(int mines) {
             game.move(point);
-            images.modImage(point, mines);
+            images.setImageVisible(point, mines);
         }
     }
 

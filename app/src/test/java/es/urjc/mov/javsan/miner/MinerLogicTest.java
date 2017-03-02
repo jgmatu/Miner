@@ -23,6 +23,7 @@ public class MinerLogicTest {
     public void concrete_map_isCorrect() throws Exception {
         // Mapper of test... the constant are exactly for the test...
         MinerGame game = new MinerGame(new Point(ROWS, FIELDS) , SEED , EASY);
+
         if (!isGetMines(game)) {
             fail();
         }
@@ -32,7 +33,7 @@ public class MinerLogicTest {
         }
         // Winner test...
         move_win(game);
-        if (!game.isWinner()) {
+        if (!game.isWinGame()) {
             fail();
         }
     }
@@ -41,7 +42,7 @@ public class MinerLogicTest {
     public void lost_game_isCorrect() throws Exception {
         MinerGame map = new MinerGame(new Point(ROWS , FIELDS) , SEED , EASY);
         move(map , new Point(0 ,1)); // Mine!!!!
-        if (!map.isLostMap()) {
+        if (!map.isLostGame()) {
             fail();
         }
     }
@@ -58,7 +59,7 @@ public class MinerLogicTest {
             move(game , new Point(val.nextInt(fields + 1), val.nextInt(fields + 1)));
         }
         // The game is with all mines... loser random moves.
-        if (game.isWinner()) {
+        if (game.isWinGame()) {
             fail();
         }
     }
@@ -76,7 +77,7 @@ public class MinerLogicTest {
                 }
             }
         }
-        if (!game.isWinner()) {
+        if (!game.isWinGame()) {
             fail();
         }
     }

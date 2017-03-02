@@ -40,6 +40,14 @@ public class Console {
         }
     }
 
+    public boolean isRadarActive() {
+        return radar.isActive();
+    }
+
+    public void scanRadar(MinerGame game, ImageMap img) {
+        radar.scan(game , img);
+    }
+
     public void restartRadar(int nRadar) {
         radar.restart(nRadar);
     }

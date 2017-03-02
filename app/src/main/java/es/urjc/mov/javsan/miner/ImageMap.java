@@ -35,11 +35,11 @@ public class ImageMap {
         }
     }
 
-    public void modImage(Point p , int mines) {
-        if (mines == 0) {
-            // The image is now visible this image has not mines near...
-            images[p.getRow()][p.getField()].setImageResource(R.mipmap.square_yellow);
-        } else {
+    public void setImageVisible(Point p , int mines) {
+        // The image is now visible this image has not mines near...
+        images[p.getRow()][p.getField()].setImageResource(R.mipmap.square_yellow);
+
+        if (mines > 0) {
             // The image is now visible with mines nears...
             images[p.getRow()][p.getField()].setImageResource(R.mipmap.mines1 + mines - 1);
         }
@@ -50,7 +50,7 @@ public class ImageMap {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
                 if (paint[i][j]) {
-                    modImage(p, game.getMines(p));
+                    setImageVisible(p, game.getMines(p));
                 }
             }
         }
@@ -74,7 +74,7 @@ public class ImageMap {
             images[p.getRow()][p.getField()].setImageResource(R.mipmap.mine);
         } else {
             // Image without mine..
-            modImage(p , game.getMines(p));
+            setImageVisible(p , game.getMines(p));
         }
     }
 }
