@@ -20,10 +20,6 @@ public class Square {
         return hidden;
     }
 
-    public void hidden() {
-        this.hidden = true;
-    }
-
     public void visible() {
         this.hidden = false;
     }

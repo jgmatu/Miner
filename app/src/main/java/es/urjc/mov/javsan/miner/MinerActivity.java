@@ -234,31 +234,55 @@ public class MinerActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+
             if (game.isEndGame()) {
+                //soundLost();
                 showResult();
                 return;
             }
+
             console.disableRadar(game, images);
-            chkMove();
+            checkGameMove();
 
             if (game.isWinGame() && !debug) {
+                //soundWin();
                 showWin();
+            }
+        }
+
+        private void soundLost() {
+            int freqTone = 400;
+            for (int i = 0 ; i < 10 ; i++) {
+                new Sound().play(freqTone);
+                freqTone -= 10;
+            }
+        }
+
+        private void soundWin () {
+            int freqTone = 100;
+            for (int i = 0 ; i < 10 ; i++) {
+                new Sound().play(freqTone);
+                freqTone += 10;
+            }
+        }
+
+        private void checkGameMove() {
+            if (game.isFail(point)) {
+                //int freqTone = 440;
+                //new Sound().play(freqTone);
+                // BOOM!!! Square have a mine, dead!
+                setBadMove();
+            } else {
+                //int freqTone = 220;
+                //new Sound().play(freqTone);
+                // There is not mine in the square...
+                setGoodMove();
             }
         }
 
         private void showResult() {
             showLost();
             showWin();
-        }
-
-        private void chkMove() {
-            if (game.isFail(point)) {
-                // BOOM!!! Square have a mine, dead!
-                badMove();
-            } else {
-                // There is not mine in the square...
-                goodMove();
-            }
         }
 
         private void showWin() {
@@ -275,7 +299,7 @@ public class MinerActivity extends AppCompatActivity {
             }
         }
 
-        private void goodMove() {
+        private void setGoodMove() {
             int mines = game.getMines(point);
 
             if (mines == 0) {
@@ -284,7 +308,7 @@ public class MinerActivity extends AppCompatActivity {
             show(mines); // Collateral efects we must show mines only later of fill...
         }
 
-        private void badMove() {
+        private void setBadMove() {
             game.setLostGame(point);
             images.showMapLost(game, point); // ImageMap.
             isShowLostMines = true;

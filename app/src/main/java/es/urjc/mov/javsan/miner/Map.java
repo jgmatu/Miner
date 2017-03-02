@@ -29,16 +29,19 @@ public class Map {
 
         for (int i = 0 ; i < ROWS ; i++) {
             for (int j = 0; j < COLS; j++) {
-                map[i][j] = new Square(new Point(i , j), rand.nextLong() % EASY == 0);
-                if (!map[i][j].isMine()) {
+
+                boolean mine = rand.nextLong() % EASY == 0;
+                Point p  =  new Point(i , j);
+
+                map[i][j] = new Square(p , mine);
+
+                if (!mine) {
                     moves++;
                 }
-                map[i][j].hidden();
             }
         }
+        newSeed();
 
-        seed++;
-        rand.setSeed(seed);
         return moves;
     }
 
@@ -115,6 +118,11 @@ public class Map {
 
     public int getSeed() {
         return seed;
+    }
+
+    private void newSeed() {
+        seed++;
+        rand.setSeed(seed);
     }
 
     private boolean[][] initPaint() {

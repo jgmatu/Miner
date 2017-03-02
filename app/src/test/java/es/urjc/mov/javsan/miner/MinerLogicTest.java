@@ -107,7 +107,7 @@ public class MinerLogicTest {
 
     private void move(MinerGame game , Point p) {
         if (game.isFail(p)) {
-            game.setLostGame();
+            game.setLostGame(p);
             return;
         }
 
