@@ -1,5 +1,6 @@
 package es.urjc.mov.javsan.miner;
 
+import android.media.MediaPlayer;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -33,19 +34,10 @@ public class Console {
         tab.addView(row);
     }
 
-    public void disableRadar(MinerGame map , ImageMap img) {
+    public void disableRadar(MinerGame game , ImageMap img) {
         if (radar.isActive()) {
-            radar.disable();
-            radar.scan(map, img);
+            radar.setClean(game, img);
         }
-    }
-
-    public boolean isRadarActive() {
-        return radar.isActive();
-    }
-
-    public void scanRadar(MinerGame game, ImageMap img) {
-        radar.scan(game , img);
     }
 
     public void restartRadar(int nRadar) {
@@ -85,12 +77,16 @@ public class Console {
         }
 
         private void setRadar() {
-            if (radar.aviable()) {
-                radar.active();
-                radar.scan(mapper, images);
-            } else if (!radar.isActive()) {
+            if (radar.isEnable()) {
+                radar.setScan(mapper , images);
+            }
+
+            if (!radar.isActive()) {
                 radar.msgDisable(activity);
             }
+
+            MediaPlayer mediaPlayer = MediaPlayer.create(activity, R.raw.submarine_sonar);
+            mediaPlayer.start();
         }
     }
 }

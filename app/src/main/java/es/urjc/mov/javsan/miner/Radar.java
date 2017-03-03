@@ -8,54 +8,76 @@ import android.widget.Toast;
 
 public class Radar {
 
-    private int numRadar;
-    private boolean radar;
+    private int numRadars;
+    private boolean active;
 
     Radar (int nRad) {
-        numRadar = 0;
+        numRadars = 0;
         if (nRad > 0) {
-            numRadar = nRad;
+            numRadars = nRad;
         }
-        radar = false;
+        active = false;
     }
-
-    public void disable() { radar = false; };
-    public void active() {radar = true; }
 
     public boolean isActive() {
-        return radar;
+        return active;
     }
 
-    public boolean aviable() {
-        return numRadar > 0 && !isActive();
+    public boolean isEnable() {
+        return numRadars > 0 && !isActive();
     }
 
     public void restart(int nRadar) {
-        numRadar = nRadar;
-        radar = false;
+        numRadars = nRadar;
+        active = false;
     }
 
-    public void scan(MinerGame game, ImageMap images) {
+    public void setScan (MinerGame game, ImageMap images) {
+        active = true;
+        scan(game, images);
+    }
+
+    public void setClean(MinerGame game, ImageMap images) {
+        active = false;
+        scan(game, images);
+    }
+
+    private void scan(MinerGame game, ImageMap images) {
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
-                if (game.isFail(p) && radar) {
+
+                if (isScan(game, p)) {
                     images.getImage(p).setImageResource(R.mipmap.radar);
-                } else if (game.isFail(p)) {
+                }
+
+                if (isClean(game, p)) {
                     images.getImage(p).setImageResource(R.mipmap.hidden);
                 }
             }
         }
-        if (radar) {
-            numRadar--;
-        }
+        discount();
     }
 
     public void msgDisable (MinerActivity a) {
         int time = Toast.LENGTH_SHORT;
-        String txt = "The radar is disable...";
+        String txt = "The active is disable...";
         Toast msg = Toast.makeText(a , txt , time);
 
         msg.show();
+    }
+
+    private boolean isScan(MinerGame game, Point p) {
+        return game.isFail(p) && active;
+    }
+
+    private boolean isClean(MinerGame game, Point p) {
+        return game.isFail(p) && !active;
+    }
+
+    private void discount() {
+        if (active) {
+            numRadars--;
+        }
     }
 }
