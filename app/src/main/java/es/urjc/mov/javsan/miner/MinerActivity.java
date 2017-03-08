@@ -41,7 +41,7 @@ public class MinerActivity extends AppCompatActivity {
 
     private MinerGame game;
     private ImageMap imagesMap;
-    private Radar radar;
+    private RadarUI radarUI;
 
     private ImagesGame imagesGame;
 
@@ -127,7 +127,7 @@ public class MinerActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putInt("seed", seed);
-        state.putInt("radars", radar.getNumRadars());
+        state.putInt("radars", radarUI.getRadar().getNumRadars());
         state.putIntegerArrayList("moves", game.savedMoves());
     }
 
@@ -143,8 +143,8 @@ public class MinerActivity extends AppCompatActivity {
         int numRadars = state.getInt("radars");
 
         for (int i = numRadars ; i < RADARS; i++) {
-            radar.setScan(game);
-            radar.setClean(game);
+            radarUI.getRadar().setScan(game);
+            radarUI.getRadar().setClean(game);
         }
     }
 
@@ -175,8 +175,7 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void createRadar() {
-        radar = new Radar(RADARS, new RadarSound(this   ));
-        new RadarUI(this, game, imagesMap, radar);
+        radarUI = new RadarUI(this, game, imagesMap, new Radar(RADARS));
     }
 
     private void toastMsg(String txt) {
@@ -207,7 +206,7 @@ public class MinerActivity extends AppCompatActivity {
         seed = game.getSeed();
         game.restart();
         imagesMap.restart();
-        radar.restart(RADARS);
+        radarUI.restart(RADARS);
         imagesGame.showMap();
         isShowLostMines = false;
         stopSound();
@@ -297,7 +296,7 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void cleanScan() {
-        boolean[][] isClean = radar.setClean(game);
+        boolean[][] isClean = radarUI.getRadar().setClean(game);
 
         for (int i = 0 ; i < game.getRows(); i++) {
             for (int j = 0 ; j < game.getCols(); j++) {

@@ -4,16 +4,9 @@ class Radar {
 
     private int numRadars;
     private boolean active;
-    private RadarSound radarSound;
 
-    Radar(int nRadar, RadarSound rS) {
+    Radar(int nRadar) {
         restart(nRadar);
-        radarSound = rS;
-    }
-
-    Radar (int nRadar) {
-        restart(nRadar);
-        radarSound = null;
     }
 
     void restart(int nRadar) {
@@ -26,12 +19,10 @@ class Radar {
 
     boolean[][] setScan (MinerGame game) {
         numRadars--;
-        playSound();
         return getScan(game);
     }
 
     boolean[][] setClean (MinerGame game) {
-        stopSound();
         return getScan(game);
     }
 
@@ -43,17 +34,6 @@ class Radar {
         return numRadars > 0 && !active;
     }
 
-    private void playSound() {
-        if (radarSound != null){
-            radarSound.play();
-        }
-    }
-
-    private void stopSound() {
-        if (radarSound != null) {
-            radarSound.stop();
-        }
-    }
 
     private boolean[][] initScan(MinerGame game) {
         boolean[][] scan = new boolean[game.getRows()][game.getCols()];
@@ -76,7 +56,6 @@ class Radar {
                 }
             }
         }
-
         return isScan;
     }
 }

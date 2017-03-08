@@ -5,17 +5,30 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 class RadarUI {
 
+    private static final int SIZESCORE = 20;
+
     private MinerActivity activity;
     private Radar radar;
+    private View scoreView;
 
     RadarUI (MinerActivity a, MinerGame game, ImageMap img, Radar r) {
         activity = a;
         radar = r;
         createRadar(game, img);
+    }
+
+    public Radar getRadar() {
+        return radar;
+    }
+
+    public void restart(int nRadar) {
+        radar.restart(nRadar);
+        refreshRadar();
     }
 
     private void createRadar(MinerGame game, ImageMap img) {
@@ -28,7 +41,7 @@ class RadarUI {
         row.setLayoutParams(rows);
         row.setGravity(Gravity.CENTER);
         row.addView(getButton(game, img));
-
+        row.addView(getNumRadars());
         tab.addView(row);
     }
 
@@ -36,10 +49,30 @@ class RadarUI {
         Button rad = new Button(activity);
 
         rad.setText(R.string.radar);
-        rad.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        rad.setLayoutParams(new TableRow.LayoutParams(0,
+                TableRow.LayoutParams.MATCH_PARENT, 0.6f));
         rad.setOnClickListener(new RadarEvent(game, img));
 
         return rad;
+    }
+
+    private TextView getNumRadars() {
+        TextView t = new TextView(activity);
+
+        t.setText(String.valueOf(radar.getNumRadars()));
+        t.setLayoutParams(new TableRow.LayoutParams(0,
+                TableRow.LayoutParams.MATCH_PARENT, 0.4f));
+        t.setGravity(Gravity.CENTER);
+        t.setTextSize(SIZESCORE);
+
+        scoreView = t;
+
+        return t;
+    }
+
+    private void refreshRadar() {
+        TextView t = (TextView) scoreView;
+        t.setText(String.valueOf(radar.getNumRadars()));
     }
 
     private class RadarEvent implements View.OnClickListener {
@@ -62,6 +95,7 @@ class RadarUI {
             if (radar.isEnable() && !game.isEndGame()) {
                 showScan();
             }
+            refreshRadar();
         }
 
         private void showScan() {
