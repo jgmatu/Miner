@@ -16,7 +16,7 @@ class RadarUI {
     private Radar radar;
     private View scoreView;
 
-    RadarUI (MinerActivity a, MinerGame game, ImageMap img, Radar r) {
+    RadarUI (MinerActivity a, MinerGame game, ImagesMap img, Radar r) {
         activity = a;
         radar = r;
         createRadar(game, img);
@@ -31,7 +31,7 @@ class RadarUI {
         refreshRadar();
     }
 
-    private void createRadar(MinerGame game, ImageMap img) {
+    private void createRadar(MinerGame game, ImagesMap img) {
         float weigth = 1.0f / (float) MinerActivity.ROWS;
         TableLayout tab = (TableLayout) activity.findViewById(R.id.map);
         TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
@@ -45,7 +45,7 @@ class RadarUI {
         tab.addView(row);
     }
 
-    private Button getButton(MinerGame game, ImageMap img) {
+    private Button getButton(MinerGame game, ImagesMap img) {
         Button rad = new Button(activity);
 
         rad.setText(R.string.radar);
@@ -77,9 +77,9 @@ class RadarUI {
 
     private class RadarEvent implements View.OnClickListener {
         private MinerGame game;
-        private ImageMap imagesMap;
+        private ImagesMap imagesMap;
 
-        RadarEvent(MinerGame g, ImageMap img) {
+        RadarEvent(MinerGame g, ImagesMap img) {
             imagesMap = img;
             game = g;
         }

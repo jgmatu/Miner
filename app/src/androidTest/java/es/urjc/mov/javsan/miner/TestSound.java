@@ -26,6 +26,5 @@ public class TestSound {
             SystemClock.sleep(1000);
             soundControl.endSound();
         }
-
     }
 }

@@ -40,7 +40,7 @@ public class MinerActivity extends AppCompatActivity {
     private View[] views;
 
     private MinerGame game;
-    private ImageMap imagesMap;
+    private ImagesMap imagesMap;
     private RadarUI radarUI;
 
     private ImagesGame imagesGame;
@@ -101,6 +101,10 @@ public class MinerActivity extends AppCompatActivity {
         TextView s = (TextView) views[VIEWS.IDSCORE];
 
         s.setText(String.valueOf(game.getScore()));
+    }
+
+    public MinerGame getGame() {
+        return game;
     }
 
     @Override
@@ -167,7 +171,7 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void createGame(int s) {
-        imagesMap = new ImageMap(new Point(ROWS, COLUMNS));
+        imagesMap = new ImagesMap(new Point(ROWS, COLUMNS));
         game = new MinerGame(new Point(ROWS, COLUMNS) , s , EASY);
         createMinerMapUI();
         imagesGame = new ImagesGame(this);

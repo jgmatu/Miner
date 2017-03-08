@@ -2,19 +2,23 @@ package es.urjc.mov.javsan.miner;
 
 import android.widget.ImageButton;
 
-class ImageMap {
+class ImagesMap {
 
     private ImageButton[][] images;
+    private int id;
 
-    ImageMap (Point maxPoint) {
+    ImagesMap(Point maxPoint) {
         images = new ImageButton[maxPoint.getRow()][maxPoint.getCol()];
+        id = 0;
     }
 
     public void setImagesMap(ImageButton image, Point point) {
         // Put the image to the matrix of map images...
         // This method is called in the creation of UI to
         // set the images of the miner map class...
+        image.setId(id);
         this.images[point.getRow()][point.getCol()] = image;
+        id = id + 1;
     }
 
     public ImageButton getImage(Point p) {

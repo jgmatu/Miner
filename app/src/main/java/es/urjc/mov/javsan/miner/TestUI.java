@@ -7,11 +7,11 @@ import java.util.Random;
 class TestUI extends AsyncTask<Void, Point, Void> {
 
     private MinerGame mapper;
-    private ImageMap images;
+    private ImagesMap images;
     private boolean winner;
     private TestUIControl control;
 
-    TestUI (MinerGame map, ImageMap img, boolean win, TestUIControl c) {
+    TestUI (MinerGame map, ImagesMap img, boolean win, TestUIControl c) {
         mapper = map;
         images = img;
         winner = win;
