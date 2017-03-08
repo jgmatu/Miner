@@ -1,30 +1,26 @@
 package es.urjc.mov.javsan.miner;
 
-/**
- * Created by javi on 2/02/17.
- */
-
-public class Square {
+class Square {
 
     private Point point;
     private boolean mine;
     private boolean hidden;
 
-    public Square(Point nowPoint, boolean state) {
+    Square(Point nowPoint, boolean state) {
         point = nowPoint;
         mine = state;
         hidden = true;
     }
 
-    public boolean isHidden() {
+    boolean isHidden() {
         return hidden;
     }
 
-    public void visible() {
+    void visible() {
         this.hidden = false;
     }
 
-    public boolean isMine() {
+    boolean isMine() {
         return mine;
     }
 

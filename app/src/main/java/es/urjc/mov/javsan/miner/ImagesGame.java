@@ -5,11 +5,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 
-/**
- * Created by javi on 11/02/17.
- */
 
-public class ImagesGame {
+
+class ImagesGame {
 
     private TableLayout table;
     private ImageView win;
@@ -21,7 +19,7 @@ public class ImagesGame {
         lost = (ImageView) a.findViewById(R.id.boom_image);
     }
 
-    public void showWin() {
+    void showWin() {
 
         // Set image to show for win...
         win.setImageResource(R.mipmap.win_image);
@@ -35,7 +33,7 @@ public class ImagesGame {
         table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
     }
 
-    public void showLost() {
+    void showLost() {
 
         // Set image to show for Lost...
         lost.setImageResource(R.mipmap.image_lost);
@@ -49,7 +47,7 @@ public class ImagesGame {
         table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
     }
 
-    public void showMap () {
+    void showMap () {
 
         // Hidden win or lost image...
         win.setLayoutParams(new RelativeLayout.LayoutParams(0 , 0));

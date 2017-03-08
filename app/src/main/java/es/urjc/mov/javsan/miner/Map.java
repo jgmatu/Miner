@@ -3,30 +3,29 @@ package es.urjc.mov.javsan.miner;
 import java.util.Random;
 
 
-public class Map {
+class Map {
 
     public final int ROWS;
-    public final int COLS;
-    public final int EASY;
-    public static final int RADIUS = 1;
+    private final int COLS;
+    private final int EASY;
+    private static final int RADIUS = 1;
 
     private Square[][] map;
     private Random rand;
-    private int seed;
 
-    Map(Point limits, int s, int e) {
+    Map(Point limits,  int e) {
         EASY = e;
         ROWS = limits.getRow();
-        COLS = limits.getField();
-        seed = s;
+        COLS = limits.getCol();
 
-        rand = new Random(seed);
+        rand = new Random(0);
         map = new Square[ROWS][COLS];
     }
 
-    public int restart() {
+    int restart(int s) {
         int moves = 0;
 
+        rand.setSeed(s);
         for (int i = 0 ; i < ROWS ; i++) {
             for (int j = 0; j < COLS; j++) {
 
@@ -40,43 +39,28 @@ public class Map {
                 }
             }
         }
-        newSeed();
-
         return moves;
     }
 
-    public boolean isMine(Point p) {
-        if (isOutMap(p)) {
-            return false;
-        }
-        return map[p.getRow()][p.getField()].isMine();
+    boolean isMine(Point p) {
+        return !isOutMap(p) && map[p.getRow()][p.getCol()].isMine();
     }
 
-    public boolean[][] fill(Point p) {
-        boolean[][] paint = fillOut(p, initPaint());
-
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                Point np = new Point(i , j);
-                if (paint[i][j] && !isInvPoint(p , np)) {
-                    changeVisible(np);
-                }
-            }
-        }
-        return paint;
+    boolean[][] getFillSquares(Point p) {
+        return fillOut(p, initPaint());
     }
 
-    public int getMines(Point p) {
+    int getMines(Point p) {
         int mines = 0;
 
         for (int i = RADIUS; i >= -RADIUS; i--) {
             for (int j = RADIUS; j >= -RADIUS; j--) {
-                Point pMap = new Point(i + p.getRow(), j + p.getField());
+                Point pMap = new Point(i + p.getRow(), j + p.getCol());
                 Point pOff = new Point(i, j);
                 if (isInvPoint(pMap, pOff)) {
                     continue;
                 }
-                if (isMine(map[p.getRow() + i][p.getField() + j])) {
+                if (isMine(map[p.getRow() + i][p.getCol() + j])) {
                     mines++;
                 }
             }
@@ -84,17 +68,17 @@ public class Map {
         return mines;
     }
 
-    public void changeVisible (Point p) {
+    void changeVisible (Point p) {
         if (isOutMap(p)) {
             return;
         }
-        if (map[p.getRow()][p.getField()].isHidden()) {
-            map[p.getRow()][p.getField()].visible();
+        if (map[p.getRow()][p.getCol()].isHidden()) {
+            map[p.getRow()][p.getCol()].visible();
         }
     }
 
-    public boolean isHidden(Point p) {
-        return map[p.getRow()][p.getField()].isHidden();
+    boolean isHidden(Point p) {
+        return !isOutMap(p) && map[p.getRow()][p.getCol()].isHidden();
     }
 
     @Override
@@ -112,17 +96,7 @@ public class Map {
             }
             result += String.format("%c", '\n');
         }
-
         return result;
-    }
-
-    public int getSeed() {
-        return seed;
-    }
-
-    private void newSeed() {
-        seed++;
-        rand.setSeed(seed);
     }
 
     private boolean[][] initPaint() {
@@ -137,14 +111,14 @@ public class Map {
     }
 
     private boolean isEndFillOut(boolean[][] paint , Point p) {
-        return isOutMap(p) || isMine(p) || !isHidden(p) || paint[p.getRow()][p.getField()];
+        return isOutMap(p) || isMine(p) || !isHidden(p) || paint[p.getRow()][p.getCol()];
     }
 
     private boolean[][] fillOut(Point p, boolean[][] paint) {
         if (isEndFillOut(paint, p)) {
             return paint;
         }
-        paint[p.getRow()][p.getField()] = true;
+        paint[p.getRow()][p.getCol()] = true;
 
         if (getMines(p) > 0) {
             return paint;
@@ -152,13 +126,13 @@ public class Map {
 
         for (int i = RADIUS; i >= -RADIUS; i--) {
             for (int j = RADIUS; j >= -RADIUS; j--) {
-                Point pMap = new Point(i + p.getRow(), j + p.getField());
+                Point pMap = new Point(i + p.getRow(), j + p.getCol());
                 Point pOff = new Point(i, j);
                 if (isInvPoint(pMap, pOff)) {
                     continue;
                 }
                 int row = p.getRow() + i;
-                int field = p.getField() + j;
+                int field = p.getCol() + j;
                 paint = fillOut(new Point(row, field), paint);
             }
         }
@@ -174,11 +148,11 @@ public class Map {
     }
 
     private boolean isMaxLim(Point p) {
-        return p.getRow() >= ROWS || p.getField() >= COLS;
+        return p.getRow() >= ROWS || p.getCol() >= COLS;
     }
 
     private boolean isMinLim(Point p) {
-        return p.getField() < 0 || p.getRow() < 0;
+        return p.getCol() < 0 || p.getRow() < 0;
     }
 
     private boolean isOutMap(Point p) {

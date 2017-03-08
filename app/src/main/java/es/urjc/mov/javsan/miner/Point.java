@@ -1,10 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
-/**
- * Created by javi on 5/02/17.
- */
 
-public class Point {
+class Point {
     private int row;
     private int field;
 
@@ -13,20 +10,25 @@ public class Point {
         field = pField;
     }
 
-    public int getField() {
+    int getCol() {
         return field;
     }
 
-    public int getRow() {
+    int getRow() {
         return row;
     }
 
-    public boolean isCenter() {
+    boolean isCenter() {
         return row == 0 && field == 0;
     }
 
-    public boolean equals(Point p) {
-        return row == p.getRow() && field == p.getField();
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Point)) {
+            return false;
+        }
+        Point p = (Point) o;
+        return row == p.getRow() && field == p.getCol();
     }
 
     @Override

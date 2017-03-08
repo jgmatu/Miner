@@ -3,4 +3,9 @@
     <string name="new_game">New Game</string>
     <string name="help">Help</string>
     <string name="debug">Debug</string>
+    <string name="game_score">Game Score</string>
+    <string name="radar">Radar</string>
+    <string name="confirm_record">Confirm Record</string>
+    <string name="player">Player</string>
+    <string name="play">Go Play!</string>
 </resources>

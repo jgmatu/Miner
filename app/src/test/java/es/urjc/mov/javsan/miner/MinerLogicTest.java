@@ -2,6 +2,7 @@ package es.urjc.mov.javsan.miner;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.Assert.fail;
@@ -17,12 +18,21 @@ public class MinerLogicTest {
     private final int EASY = 12;
 
     private final int ROWS = 8;
-    private final int FIELDS = 8;
+    private final int COLUMNS = 8;
+
+    Point[] moves = {
+            new Point(4 , 4),
+            new Point(7 , 2),
+            new Point(7 , 7),
+            new Point(1 , 0),
+            new Point(1 , 7),
+            new Point(0 , 0)
+    };
 
     @Test
     public void concrete_map_isCorrect() throws Exception {
         // Mapper of test... the constant are exactly for the test...
-        MinerGame game = new MinerGame(new Point(ROWS, FIELDS) , SEED , EASY);
+        MinerGame game = new MinerGame(new Point(ROWS, COLUMNS) , SEED , EASY);
 
         if (!isGetMines(game)) {
             fail();
@@ -40,7 +50,7 @@ public class MinerLogicTest {
 
     @Test
     public void lost_game_isCorrect() throws Exception {
-        MinerGame map = new MinerGame(new Point(ROWS , FIELDS) , SEED , EASY);
+        MinerGame map = new MinerGame(new Point(ROWS , COLUMNS) , SEED , EASY);
         move(map , new Point(0 ,1)); // Mine!!!!
         if (!map.isLostGame()) {
             fail();
@@ -82,22 +92,78 @@ public class MinerLogicTest {
         }
     }
 
+    @Test
+    public void testMoves() {
+        MinerGame game = new MinerGame(new Point(ROWS, COLUMNS), SEED, EASY);
+
+        for (int i = 0 ; i < moves.length ; i++) {
+            game.move(moves[i]);
+        }
+        ArrayList<Integer> numMoves= game.savedMoves();
+
+        int pos = 0;
+        for (Integer m : numMoves) {
+            Point p = new Point(m / COLUMNS, m % COLUMNS);
+            if (!p.equals(moves[pos])) {
+                fail();
+            }
+            pos++;
+        }
+        restartMoves(game);
+    }
+
+    @Test
+    public void testLostScore() {
+        MinerGame game = new MinerGame(new Point(ROWS, COLUMNS), SEED, EASY);
+        Random rand = new Random(SEED);
+
+        while (!game.isEndGame()) {
+            Point p = new Point(rand.nextInt(ROWS + 1), rand.nextInt(COLUMNS + 1));
+            game.move(p);
+        }
+
+        if (game.isLostGame() && game.getScore() != 0) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testWinScore() {
+        MinerGame game = new MinerGame(new Point(ROWS, COLUMNS), SEED, EASY);
+        Random rand = new Random(SEED);
+
+        while (!game.isEndGame()) {
+            Point p = new Point(rand.nextInt(ROWS + 1), rand.nextInt(COLUMNS + 1));
+            if (!game.isFail(p)) {
+                game.move(p);
+            }
+        }
+        game.restart();
+        if (game.getScore() == 0) {
+            fail();
+        }
+    }
+
+    private void restartMoves(MinerGame game) {
+        game.restart();
+        if (game.numMoves() == 0) {
+            fail();
+        }
+        if (game.savedMoves().size() != 0) {
+            fail();
+        }
+        if (game.isWinGame() && game.getScore() == 0) {
+            fail();
+        }
+    }
+
     private void fail_fill(MinerGame game) {
         // Fill method check.
         for (int i = 0; i < 4; i++) {
             game.move(new Point(i, 6));
         }
-        game.empty(new Point(4, 4));
+        game.fillSquares(new Point(4, 4));
     }
-
-    Point[] moves = {
-            new Point(4 , 4),
-            new Point(7 , 2),
-            new Point(7 , 7),
-            new Point(1 , 0),
-            new Point(1 , 7),
-            new Point(0 , 0)
-    };
 
     private void move_win(MinerGame map) {
         for (int i = 0 ; i < moves.length ; i++) {
@@ -112,7 +178,7 @@ public class MinerLogicTest {
         }
 
         if (game.getMines(p) == 0) {
-            game.empty(p);
+            game.fillSquares(p);
         } else {
             game.move(p);
         }

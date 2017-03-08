@@ -2,23 +2,23 @@ package es.urjc.mov.javsan.miner;
 
 import android.widget.ImageButton;
 
-public class ImageMap {
+class ImageMap {
 
     private ImageButton[][] images;
 
     ImageMap (Point maxPoint) {
-        images = new ImageButton[maxPoint.getRow()][maxPoint.getField()];
+        images = new ImageButton[maxPoint.getRow()][maxPoint.getCol()];
     }
 
-    public void setImage(ImageButton image, Point point) {
+    public void setImagesMap(ImageButton image, Point point) {
         // Put the image to the matrix of map images...
         // This method is called in the creation of UI to
         // set the images of the miner map class...
-        this.images[point.getRow()][point.getField()] = image;
+        this.images[point.getRow()][point.getCol()] = image;
     }
 
     public ImageButton getImage(Point p) {
-        return images[p.getRow()][p.getField()];
+        return images[p.getRow()][p.getCol()];
     }
 
     public void showMapLost(MinerGame game, Point p) {
@@ -37,11 +37,11 @@ public class ImageMap {
 
     public void setImageVisible(Point p , int mines) {
         // The image is now visible this image has not mines near...
-        images[p.getRow()][p.getField()].setImageResource(R.mipmap.square_yellow);
+        images[p.getRow()][p.getCol()].setImageResource(R.mipmap.square_yellow);
 
         if (mines > 0) {
             // The image is now visible with mines nears...
-            images[p.getRow()][p.getField()].setImageResource(R.mipmap.mines1 + mines - 1);
+            images[p.getRow()][p.getCol()].setImageResource(R.mipmap.mines1 + mines - 1);
         }
     }
 
@@ -65,13 +65,13 @@ public class ImageMap {
     }
 
     public void push(Point p) {
-        images[p.getRow()][p.getField()].performClick();
+        images[p.getRow()][p.getCol()].performClick();
     }
 
     private void showImage(MinerGame game, Point p) {
         if (game.isFail(p)) {
             // Image of square with mine...
-            images[p.getRow()][p.getField()].setImageResource(R.mipmap.mine);
+            images[p.getRow()][p.getCol()].setImageResource(R.mipmap.mine);
         } else {
             // Image without mine..
             setImageVisible(p , game.getMines(p));

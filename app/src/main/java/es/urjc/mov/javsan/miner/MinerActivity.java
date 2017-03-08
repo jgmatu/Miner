@@ -1,5 +1,6 @@
 package es.urjc.mov.javsan.miner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,42 +13,57 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MinerActivity extends AppCompatActivity {
 
-    public static final String TAG = "Mines Debug : ";
+    //public static final String TAG = "Mines Debug : ";
 
     public static final int BUTTRADAR = 1;
     public static final int ROWS = 10;
     public static final int COLUMNS = 10;
     public static final int SEED = 4;
-    public static final int EASY = 3;
-    public static final int RADARS = 2;
+    public static final int EASY = 10;
+    public static final int RADARS = 5;
+    private static final int SCORES = 1;
+    private static final int SIZEROWSTABLE = BUTTRADAR + ROWS + SCORES;
+    private static final int SIZESCORE = 25;
+
+    static class VIEWS {
+        private static final int IDSCORE = 0;
+        private static final int NUMVIEWS = 1;
+    }
+
+    private View[] views;
 
     private MinerGame game;
-    private ImageMap images;
-    private Console console;
+    private ImageMap imagesMap;
+    private Radar radar;
+
     private ImagesGame imagesGame;
-    private TestUI test;
+
     private boolean debug = true;
     private boolean isShowLostMines = false;
     private int seed;
 
-    // Methods Activity....
+    private SoundControl soundControl;
+    private TestUIControl testControl;
+    private SoundControl soundMoves;
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+
         inflater.inflate(R.menu.game_options, menu);
-        test = null;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean win = true;
 
         switch (item.getItemId()) {
             case R.id.new_game:
@@ -57,10 +73,10 @@ public class MinerActivity extends AppCompatActivity {
                 toastMsg("Help!");
                 return true;
             case R.id.debug_win:
-                debPlayingUI(win);  // Thread win...
+                debPlayingUI(true);  // Thread win...
                 return true;
             case R.id.debug_lost:
-                debPlayingUI(!win); // Thread lost...
+                debPlayingUI(false); // Thread lost...
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -68,7 +84,6 @@ public class MinerActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // Change option on condition.
         if (!debug) {
             menu.findItem(R.id.debug_win).setVisible(false);
             menu.findItem(R.id.debug_lost).setVisible(false);
@@ -76,104 +91,194 @@ public class MinerActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (test != null) {
-            test.cancel(true);
+    public void exitPrevTestUI() {
+        if (testControl != null) {
+            testControl.exit();
         }
+    }
+
+    public void refreshScore() {
+        TextView s = (TextView) views[VIEWS.IDSCORE];
+
+        s.setText(String.valueOf(game.getScore()));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mines);
+
         seed = SEED;
+        soundControl = null;
+        testControl = null;
+        views = new View[VIEWS.NUMVIEWS];
 
         if (savedInstanceState != null) {
             seed = savedInstanceState.getInt("seed");
         }
-
         createGame(seed);
         if (savedInstanceState != null) {
             setStateActivity(savedInstanceState);
-            Log.v(MinerActivity.TAG, String.format("Winner -> %b , Looser -> %b" , game.isWinGame() , game.isLostGame()));
         }
+        soundMoves = null;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putInt("seed", seed);
-        state.putIntegerArrayList("moves", game.saveMoves());
-        Log.v(MinerActivity.TAG, String.format("Winner -> %b , Looser -> %b" , game.isWinGame() , game.isLostGame()));
+        state.putInt("radars", radar.getNumRadars());
+        state.putIntegerArrayList("moves", game.savedMoves());
     }
 
     private void setStateActivity(Bundle state) {
-        ArrayList<Integer> moves = state.getIntegerArrayList("moves");
-
-        for (Integer m : moves) {
-            Point p = new Point(m / COLUMNS, m % COLUMNS);
-            if (game.isFail(p)) {
-                Log.v(MinerActivity.TAG, "FAIL!!!!");
-                game.setLostGame(p);
-                images.showMapLost(game, p);
-                break;
-            }
-            game.move(p);
-            images.setImageVisible(p , game.getMines(p));
-        }
-
+        restoreRadar(state);
+        restoreMap(state);
         if (game.isWinGame()) {
             imagesGame.showWin();
         }
     }
 
-    private void createGame(int seed) {
-        images = new ImageMap(new Point(ROWS, COLUMNS));
-        game = createMinerMapUI(seed);
-        console = getConsole();
+    private void restoreRadar(Bundle state) {
+        int numRadars = state.getInt("radars");
+
+        for (int i = numRadars ; i < RADARS; i++) {
+            radar.setScan(game);
+            radar.setClean(game);
+        }
+    }
+
+    private void restoreMap(Bundle state) {
+        ArrayList<Integer> moves = state.getIntegerArrayList("moves");
+        if (moves == null) {
+            return;
+        }
+        for (Integer m : moves) {
+            Point p = new Point(m / COLUMNS, m % COLUMNS);
+
+            if (game.isFail(p)) {
+                game.setLostGame(p);
+                imagesMap.showMapLost(game, p);
+                break;
+            }
+            game.move(p);
+            imagesMap.setImageVisible(p , game.getMines(p));
+        }
+    }
+
+    private void createGame(int s) {
+        imagesMap = new ImageMap(new Point(ROWS, COLUMNS));
+        game = new MinerGame(new Point(ROWS, COLUMNS) , s , EASY);
+        createMinerMapUI();
         imagesGame = new ImagesGame(this);
+        createRadar();
+    }
+
+    private void createRadar() {
+        radar = new Radar(RADARS, new RadarSound(this   ));
+        new RadarUI(this, game, imagesMap, radar);
     }
 
     private void toastMsg(String txt) {
         int time = Toast.LENGTH_SHORT;
         Toast msg = Toast.makeText(this, txt, time);
+
         msg.show();
     }
 
     private void debPlayingUI(boolean win) {
-        cancelPrevTestUI();
+        exitPrevTestUI();
         createTestUI(win);
     }
 
-    private void cancelPrevTestUI() {
-        if (test != null) {
-            test.cancel(true);
-        }
-    }
-
     private void createTestUI(boolean win) {
+        exitPrevTestUI();
+        cleanScan();
         if (!game.isEndGame()) {
-            test = new TestUI(game, images, this, win);
-            test.execute();
+            Log.v("TRACE", "DEMO PLAY");
+            testControl = new TestUIControl();
+            new TestUI(game, imagesMap, win, testControl).execute();
         }
     }
 
     private void newGame() {
-        cancelPrevTestUI();
+        exitPrevTestUI();
+
         seed = game.getSeed();
         game.restart();
-        images.restart();
-        console.restartRadar(RADARS);
+        imagesMap.restart();
+        radar.restart(RADARS);
         imagesGame.showMap();
         isShowLostMines = false;
+        stopSound();
+        refreshScore();
+        cleanScan();
     }
 
-    private Console getConsole() {
-        Console c = new Console(this, RADARS);
-        c.newRadar(this, game, images);
-        return c;
+    private void stopSound() {
+        if (soundControl != null) {
+            soundControl.endSound();
+        }
+    }
+
+    private void createMinerMapUI() {
+        TableLayout table = (TableLayout) findViewById(R.id.map);
+
+        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT, 0,
+                1.0f / (float) (SIZEROWSTABLE));
+
+        TableRow.LayoutParams imgDesign = new TableRow.LayoutParams(
+                0, TableRow.LayoutParams.MATCH_PARENT,
+                1.0f / (float) COLUMNS);
+
+        table.addView(addScore());
+        for (int i = 0; i < ROWS; i++) {
+            TableRow row = new TableRow(this);
+            row.setLayoutParams(rows);
+
+            for (int j = 0; j < COLUMNS; j++) {
+                Point point = new Point(i, j);
+
+                ImageButton imgBut = initialButton(imgDesign, point);
+                imagesMap.setImagesMap(imgBut, point);
+
+                row.addView(imgBut);
+                row.setGravity(Gravity.CENTER);
+            }
+            table.addView(row);
+        }
+
+        table.setStretchAllColumns(true);
+        table.setGravity(Gravity.CENTER);
+    }
+
+    private TableRow addScore() {
+        TableRow row = new TableRow(this);
+        TextView name = new TextView(this);
+        TextView score = new TextView(this);
+
+        name.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.MATCH_PARENT,
+                0.8f));
+
+        score.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.MATCH_PARENT,
+                0.2f));
+
+        name.setText(R.string.game_score);
+        score.setText("0");
+        name.setTextSize(SIZESCORE);
+        score.setTextSize(SIZESCORE);
+
+        views[VIEWS.IDSCORE] = score;
+
+        row.addView(name);
+        row.addView(score);
+
+        return row;
     }
 
     private ImageButton initialButton(TableRow.LayoutParams design, Point point) {
@@ -191,38 +296,17 @@ public class MinerActivity extends AppCompatActivity {
         return imgBut;
     }
 
-    private MinerGame createMinerMapUI(int seed) {
-        TableLayout table = (TableLayout) findViewById(R.id.map);
-        MinerGame map = new MinerGame(new Point(ROWS, COLUMNS) , seed , EASY);
+    private void cleanScan() {
+        boolean[][] isClean = radar.setClean(game);
 
-        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, 0, 1.0f / (float) (ROWS + BUTTRADAR));
-        TableRow.LayoutParams imgDesign = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1.0f / (float) COLUMNS);
-
-
-        for (int i = 0; i < ROWS; i++) {
-            TableRow row = new TableRow(this);
-
-            // Generate table rows to the UI...
-            row.setLayoutParams(rows);
-
-            for (int j = 0; j < COLUMNS; j++) {
-                Point point = new Point(i, j);
-
-                // Here we fill out the images UI...
-                ImageButton imgBut = initialButton(imgDesign, point);
-                images.setImage(imgBut, point); // Set images in ImageMap.
-
-                row.addView(imgBut);
-                row.setGravity(Gravity.CENTER);
+        for (int i = 0 ; i < game.getRows(); i++) {
+            for (int j = 0 ; j < game.getCols(); j++) {
+                if (isClean[i][j]) {
+                    Point p = new Point(i, j);
+                    imagesMap.getImage(p).setImageResource(R.mipmap.hidden);
+                }
             }
-            table.addView(row);
         }
-
-        // At last step change some properties of UI in the TableLayout..
-        table.setStretchAllColumns(true);
-        table.setGravity(Gravity.CENTER);
-
-        return map;
     }
 
     private class EventMap implements View.OnClickListener {
@@ -236,92 +320,118 @@ public class MinerActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             if (game.isEndGame()) {
-                //soundLost();
-                showResult();
+                showImage();
                 return;
             }
+            cleanScan();
 
-            console.disableRadar(game, images);
-            checkGameMove();
+            int score = checkGameMove(point);
+            refreshScore();
+            showWinGame();
 
-            if (game.isWinGame() && !debug) {
-                //soundWin();
-                showWin();
+            if (game.isLostGame()) {
+                stopSound();
+                saveRecordScore(score);
             }
         }
 
-        private void soundLost() {
-            int freqTone = 400;
-            for (int i = 0 ; i < 10 ; i++) {
-                new Sound().play(freqTone);
-                freqTone -= 10;
+        private void showWinGame() {
+            if (game.isWinGame()) {
+                if (!debug) {
+                    showWin();
+                }
+                toastMsg("WIN!");
             }
         }
 
-        private void soundWin () {
-            int freqTone = 100;
-            for (int i = 0 ; i < 10 ; i++) {
-                new Sound().play(freqTone);
-                freqTone += 10;
-            }
-        }
+        private int checkGameMove(Point p) {
+            int score;
 
-        private void checkGameMove() {
-            if (game.isFail(point)) {
-                //int freqTone = 440;
-                //new Sound().play(freqTone);
-                // BOOM!!! Square have a mine, dead!
-                setBadMove();
+            if (game.isFail(p)) {
+                score = setBadMove(p);
             } else {
-                //int freqTone = 220;
-                //new Sound().play(freqTone);
-                // There is not mine in the square...
-                setGoodMove();
+                score = setGoodMove(p);
             }
+            return score;
         }
 
-        private void showResult() {
+        private void showImage() {
             showLost();
             showWin();
         }
 
         private void showWin() {
             if (game.isWinGame() && !debug) {
-                // Objetivo cumplido, campo de minas despejado!
                 imagesGame.showWin();
             }
         }
 
         private void showLost() {
             if (game.isLostGame() && !debug && isShowLostMines) {
-                // We have lost the match.. BOOM!!
                 imagesGame.showLost();
             }
         }
 
-        private void setGoodMove() {
-            int mines = game.getMines(point);
+        private void saveRecordScore(int score) {
+            Records records = new Records(MinerActivity.this);
 
-            if (mines == 0) {
-                fill();
+            if (records.isRecord(score)) {
+                Intent i = new Intent(MinerActivity.this, RecordsActivity.class);
+                i.putExtra("score", score);
+                startActivity(i);
             }
-            show(mines); // Collateral efects we must show mines only later of fill...
         }
 
-        private void setBadMove() {
-            game.setLostGame(point);
-            images.showMapLost(game, point); // ImageMap.
+        private int setGoodMove(Point p) {
+            int mines = game.getMines(p);
+            stopSound();
+            startSound(p);
+            if (mines == 0) {
+                floodEmptySquares();
+            }
+            showImage(mines);
+            game.move(p);
+
+            return game.getScore();
+        }
+
+        private int setBadMove(Point p) {
+            int score = game.getScore();
+
+            game.setLostGame(p);
+            imagesMap.showMapLost(game, p);
             isShowLostMines = true;
+            stopSound();
+            boomSound();
+            return score;
         }
 
-        private void fill() {
-            images.fill(game, game.empty(point));
+        private void boomSound() {
+            soundControl = new SoundControl();
+            new SoundAudio(MinerActivity.this, soundControl , R.raw.explosion).execute();
         }
 
-        private void show(int mines) {
-            game.move(point);
-            images.setImageVisible(point, mines);
+        private void floodEmptySquares() {
+            imagesMap.fill(game, game.fillSquares(point));
+        }
+
+        private void showImage(int mines) {
+            if (game.isHidden(point)) {
+                imagesMap.setImageVisible(point, mines);
+            }
+        }
+
+        private void stopSound() {
+            if (soundMoves != null) {
+                soundMoves.endSound();
+            }
+        }
+
+        private void startSound(Point p) {
+            if (game.isHidden(p)) {
+                soundMoves = new SoundControl();
+                new SoundTone(game.getMines(p) * 100 + 500, soundMoves).execute();
+            }
         }
     }
-
 }

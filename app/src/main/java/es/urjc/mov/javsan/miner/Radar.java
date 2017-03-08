@@ -1,83 +1,82 @@
 package es.urjc.mov.javsan.miner;
 
-import android.widget.Toast;
-
-/**
- * Created by javi on 6/02/17.
- */
-
-public class Radar {
+class Radar {
 
     private int numRadars;
     private boolean active;
+    private RadarSound radarSound;
 
-    Radar (int nRad) {
+    Radar(int nRadar, RadarSound rS) {
+        restart(nRadar);
+        radarSound = rS;
+    }
+
+    Radar (int nRadar) {
+        restart(nRadar);
+        radarSound = null;
+    }
+
+    void restart(int nRadar) {
         numRadars = 0;
-        if (nRad > 0) {
-            numRadars = nRad;
+        if (nRadar > 0) {
+            numRadars = nRadar;
         }
         active = false;
     }
 
-    public boolean isActive() {
-        return active;
+    boolean[][] setScan (MinerGame game) {
+        numRadars--;
+        playSound();
+        return getScan(game);
     }
 
-    public boolean isEnable() {
-        return numRadars > 0 && !isActive();
+    boolean[][] setClean (MinerGame game) {
+        stopSound();
+        return getScan(game);
     }
 
-    public void restart(int nRadar) {
-        numRadars = nRadar;
-        active = false;
+    int getNumRadars () {
+        return numRadars;
     }
 
-    public void setScan (MinerGame game, ImageMap images) {
-        active = true;
-        scan(game, images);
+    boolean isEnable() {
+        return numRadars > 0 && !active;
     }
 
-    public void setClean(MinerGame game, ImageMap images) {
-        active = false;
-        scan(game, images);
+    private void playSound() {
+        if (radarSound != null){
+            radarSound.play();
+        }
     }
 
-    private void scan(MinerGame game, ImageMap images) {
+    private void stopSound() {
+        if (radarSound != null) {
+            radarSound.stop();
+        }
+    }
+
+    private boolean[][] initScan(MinerGame game) {
+        boolean[][] scan = new boolean[game.getRows()][game.getCols()];
+        for (int i = 0; i < game.getRows(); i++) {
+            for (int j = 0 ; j < game.getCols(); j++){
+                scan[i][j] = false;
+            }
+        }
+        return scan;
+    }
+
+    private boolean[][] getScan(MinerGame game) {
+        boolean[][] isScan = initScan(game);
+
         for (int i = 0 ; i < MinerActivity.ROWS ; i++) {
             for (int j = 0; j < MinerActivity.COLUMNS; j++) {
                 Point p = new Point(i , j);
-
-                if (isScan(game, p)) {
-                    images.getImage(p).setImageResource(R.mipmap.radar);
-                }
-
-                if (isClean(game, p)) {
-                    images.getImage(p).setImageResource(R.mipmap.hidden);
+                if (game.isFail(p)) {
+                    isScan[i][j] = true;
                 }
             }
         }
-        discount();
-    }
 
-    public void msgDisable (MinerActivity a) {
-        int time = Toast.LENGTH_SHORT;
-        String txt = "The active is disable...";
-        Toast msg = Toast.makeText(a , txt , time);
-
-        msg.show();
-    }
-
-    private boolean isScan(MinerGame game, Point p) {
-        return game.isFail(p) && active;
-    }
-
-    private boolean isClean(MinerGame game, Point p) {
-        return game.isFail(p) && !active;
-    }
-
-    private void discount() {
-        if (active) {
-            numRadars--;
-        }
+        return isScan;
     }
 }

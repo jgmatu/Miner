@@ -1,23 +1,23 @@
 package es.urjc.mov.javsan.miner;
 
 import android.os.AsyncTask;
-import android.os.SystemClock;
 
 import java.util.Random;
 
-public class TestUI extends AsyncTask<Void, Point, Void> {
+class TestUI extends AsyncTask<Void, Point, Void> {
 
-    MinerGame mapper;
-    ImageMap images;
-    ImagesGame imgGames;
+    private MinerGame mapper;
+    private ImageMap images;
     private boolean winner;
+    private TestUIControl control;
 
-    TestUI (MinerGame map, ImageMap img, MinerActivity a, boolean win) {
+    TestUI (MinerGame map, ImageMap img, boolean win, TestUIControl c) {
         mapper = map;
         images = img;
-        imgGames = new ImagesGame(a);
         winner = win;
+        control = c;
     }
+
 
     private boolean isGoodMove(MinerGame game , Point p) {
         return !game.isFail(p) && game.isHidden(p);
@@ -41,16 +41,9 @@ public class TestUI extends AsyncTask<Void, Point, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        Random m = new Random(MinerActivity.SEED);
-
-        while (!mapper.isEndGame() && !isCancelled()) {
-            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.COLUMNS));
-            if (winner) {
-                goodMove(mapper , p);
-            } else {
-                badMove(mapper, p);
-            }
-            SystemClock.sleep(100);
+        try {
+            autoRandomPlay();
+        } catch (InterruptedException e) {
         }
         return null;
     }
@@ -59,6 +52,19 @@ public class TestUI extends AsyncTask<Void, Point, Void> {
     protected void onProgressUpdate(Point... values) {
         super.onProgressUpdate(values);
         images.push(values[0]);
+    }
+
+    private void autoRandomPlay() throws InterruptedException {
+        Random m = new Random(MinerActivity.SEED);
+
+        while (!mapper.isEndGame() && !control.isExit()) {
+            Point p = new Point(m.nextInt(MinerActivity.ROWS), m.nextInt(MinerActivity.COLUMNS));
+            if (winner) {
+                goodMove(mapper , p);
+            } else {
+                badMove(mapper, p);
+            }
+        }
     }
 }
 

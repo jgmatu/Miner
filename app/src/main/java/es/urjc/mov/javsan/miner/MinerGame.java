@@ -2,29 +2,26 @@ package es.urjc.mov.javsan.miner;
 
 import java.util.ArrayList;
 
-/**
- * Created by javi on 5/02/17..
- * MinerGame class... images an map booleans of mines and Squares...
- */
-
-public class MinerGame {
+class MinerGame {
 
     private static final int LOST = -1;
+    private static final int FACTOR = 50;
+
     private final int ROWS;
     private final int COLS;
 
     private Map map;
     private int numMoves;
     private ArrayList<Integer> movesGame;
+    private int score;
+    private int seed;
 
-    // Create new mine map and generate
-    // the matrix images to set all them
-    // in the UI method in the activity...
-    MinerGame(Point limit , int s, int e) {
-        map = new Map(limit, s, e);
-        numMoves = map.restart();
-        ROWS = limit.getRow();
-        COLS = limit.getField();
+    MinerGame(Point limits , int s, int e) {
+        map = new Map(limits, e);
+        seed = s;
+        numMoves = map.restart(seed);
+        ROWS = limits.getRow();
+        COLS = limits.getCol();
         movesGame = new ArrayList<>();
     }
 
@@ -41,36 +38,39 @@ public class MinerGame {
     }
 
     public void setLostGame(Point p) {
-        movesGame.add(p.getRow() * COLS + p.getField());
+        score = 0;
+        movesGame.add(p.getRow() * COLS + p.getCol());
         this.numMoves = LOST;
     }
 
     public int numMoves() {
         return numMoves;
-    } // Method only in test...
+    }
 
     public void move(Point p) {
         if (map.isHidden(p)) {
+            score += FACTOR * getMines(p);
             numMoves--;
         }
         map.changeVisible(p);
-        movesGame.add(p.getRow() * COLS + p.getField());
+        movesGame.add(p.getRow() * COLS + p.getCol());
     }
 
-    public ArrayList<Integer> saveMoves() {
+    public ArrayList<Integer> savedMoves() {
         return movesGame;
     }
 
     public void restart() {
-        numMoves = map.restart();
+        if (!isWinGame()) {
+            score = 0;
+        }
+        seed++;
+        numMoves = map.restart(seed);
         movesGame.clear();
     }
 
-    public boolean[][] empty(Point p) {
-        boolean[][] fill = map.fill(p);
-
-        numMoves -= fillMoves(fill);
-        return fill;
+    public boolean[][] fillSquares(Point p) {
+        return movesFilled(map.getFillSquares(p));
     }
 
     public boolean isFail(Point p) {
@@ -86,7 +86,7 @@ public class MinerGame {
     }
 
     public int getSeed() {
-        return map.getSeed();
+        return seed;
     }
 
     @Override
@@ -99,18 +99,26 @@ public class MinerGame {
         return result;
     }
 
-    private int fillMoves(boolean[][] fill) {
-        int moves = 0;
+    public int getRows() {
+        return ROWS;
+    }
 
+    public int getCols() {
+        return COLS;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    private boolean[][] movesFilled(boolean[][] fill) {
         for (int i = 0; i < ROWS ; i++) {
             for (int j = 0 ; j < COLS; j++){
-                Point p = new Point(i , j);
                 if (fill[i][j]) {
-                    move(p);
-                    moves++;
+                    this.move(new Point(i, j));
                 }
             }
         }
-        return moves;
+        return fill;
     }
 }
