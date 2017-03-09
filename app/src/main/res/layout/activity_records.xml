@@ -8,8 +8,59 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/black"
         android:id="@+id/records">
 
-    </TableLayout>
+        <TableRow
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:background="@color/black"
+            android:alpha="0.6">
 
+                <EditText
+                    android:id="@+id/player_name"
+                    android:gravity="center"
+                    android:background="@color/black"
+                    android:alpha="0.6"
+                    android:textSize="24dp"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:background="@color/black"
+            android:alpha="0.6">
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:id="@+id/score"
+                    android:gravity="center"
+                    android:background="@color/black"
+                    android:alpha="0.6"
+                    android:textSize="24dp"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:background="@color/black"
+            android:alpha="0.6">
+
+                <Button
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:alpha="0.6"
+                    android:id="@+id/confirm_record"
+                    android:textSize="24dp"
+                    android:text="@string/confirm_record"/>
+
+        </TableRow>
+    </TableLayout>
 </RelativeLayout>

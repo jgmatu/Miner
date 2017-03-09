@@ -1,6 +1,5 @@
 package es.urjc.mov.javsan.miner;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,83 +19,43 @@ public class RecordsActivity extends AppCompatActivity {
     private final static int SIZETEXT = 25;
     private final static int LENNAMEPLYER = 10;
 
-    static class REGISTERPLAYER {
-        static final int IDSCORE = 0;
-        static final int IDNAME = 1;
-        static final int NUMVIEWS = 2;
-    }
-
-    private View[] views;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
-        views = new View[REGISTERPLAYER.NUMVIEWS];
 
         Intent i = getIntent();
         Bundle msg = i.getExtras();
 
         if (msg != null) {
             Integer score = msg.getInt("score");
-            newRecordUI(score);
+            setFormRecord(score);
         }
     }
 
-    private void newRecordUI(int score) {
-        TableLayout table = (TableLayout) findViewById(R.id.records);
-
-        table.addView(playerRegister());
-        table.addView(playerScore(score));
-        table.addView(playerConfirm());
+    private void setFormRecord(int score) {
+        setPlayer();
+        setScore(score);
+        setClickListener();
     }
 
-    private TableRow playerRegister() {
-        TableRow player = new TableRow(this);
-        EditText namePlayer = new EditText(this);
+    private void setPlayer() {
+        TextView t = (TextView) findViewById(R.id.player_name);
 
-        namePlayer.setTextSize(SIZETEXT);
-        namePlayer.setGravity(Gravity.CENTER);
-        namePlayer.setBackgroundColor(Color.BLACK);
-        namePlayer.setAlpha(0.6f);
-
-        views[REGISTERPLAYER.IDNAME] = namePlayer;
-
-        player.setGravity(Gravity.CENTER);
-        player.addView(namePlayer);
-        return player;
+        t.setBackgroundColor(Color.BLACK);
     }
 
-    private TableRow playerScore(int score) {
-        TableRow playerScore = new TableRow(this);
-        TextView textScore = new TextView(this);
+    private void setClickListener() {
+        Button b = (Button) findViewById(R.id.confirm_record);
 
-        textScore.setText(String.valueOf(score));
-        textScore.setTextSize(SIZETEXT);
-        textScore.setGravity(Gravity.CENTER);
-        textScore.setBackgroundColor(Color.BLACK);
-        textScore.setAlpha(0.6f);
-
-        views[REGISTERPLAYER.IDSCORE] = textScore;
-
-        playerScore.setGravity(Gravity.CENTER);
-        playerScore.addView(textScore);
-        return playerScore;
+        b.setOnClickListener(new ConfirmRecord());
     }
 
-    private TableRow playerConfirm() {
-        TableRow playerConf = new TableRow(this);
-        Button confirm = new Button(this);
+    private void setScore(int score) {
+        TextView t = (TextView) findViewById(R.id.score);
 
-        confirm.setOnClickListener(new ConfirmRecord());
-        confirm.setGravity(Gravity.CENTER);
-        confirm.setText(R.string.confirm_record);
-        confirm.setBackgroundColor(Color.BLACK);
-        confirm.setAlpha(0.6f);
-
-        playerConf.setGravity(Gravity.CENTER);
-        playerConf.addView(confirm);
-        return playerConf;
+        t.setBackgroundColor(Color.BLACK);
+        t.setText(String.valueOf(score));
     }
 
     private class ConfirmRecord implements View.OnClickListener {
@@ -116,13 +75,13 @@ public class RecordsActivity extends AppCompatActivity {
         }
 
         private void setInitName() {
-            EditText e = (EditText) views[REGISTERPLAYER.IDNAME];
+            EditText e = (EditText)  findViewById(R.id.player_name);
 
             e.setText(R.string.player);
         }
 
         private String getNamePlayer() {
-            EditText e = (EditText) views[REGISTERPLAYER.IDNAME];
+            EditText e = (EditText) findViewById(R.id.player_name);
             String name = e.getText().toString();
 
             name = name.replace("\n", "");
@@ -131,13 +90,12 @@ public class RecordsActivity extends AppCompatActivity {
         }
 
         private int getScorePlayer() {
-            TextView t = (TextView) views[REGISTERPLAYER.IDSCORE];
+            TextView t = (TextView) findViewById(R.id.score);
 
             return Integer.valueOf(t.getText().toString());
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private void showScores(Records records) {
         TableLayout table = (TableLayout) findViewById(R.id.records);
         Object[] orderRecords = records.sortedByValues();

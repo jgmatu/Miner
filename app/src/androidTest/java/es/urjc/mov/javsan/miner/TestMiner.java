@@ -31,7 +31,7 @@ public class TestMiner  {
 
     /**
      * A JUnit {@link Rule @Rule} to launch your miner under test. This is a replacement
-     * for {@link ActivityInstrumentationTestCase2}.
+     * for {@link //ActivityInstrumentationTestCase2}.
      * <p>
      * Rules are interceptors which are executed for each test method and will run before
      * any of your setup code in the {@link Before @Before} method.
@@ -50,19 +50,23 @@ public class TestMiner  {
             RecordsActivity.class, false , false) {
     };
 
-
     @Test
     public void typeTextInInput_clickButton_SubmitsForm() {
         // Lazily launch the Activity with a custom start Intent per test.
-        miner = mActivityRuleMiner.launchActivity(new Intent());
+        miner = mActivityRuleMiner.getActivity();
 
         MinerGame game = miner.getGame();
 
-        for (int i = 0 ; i < 10 ; i++) {
-            onView(withId(i)).perform(click());
-            SystemClock.sleep(500);
+        for (int i = 0 ; i < game.getRows() * game.getCols() ; i++) {
+           if (!game.isFail(new Point(i / game.getRows(), i % game.getCols()))) {
+                onView(withId(i)).perform(click());
+           }
+           if (game.isEndGame()) {
+               break;
+           }
         }
-        if (!game.isLostGame()) {
+
+        if (!game.isWinGame()) {
             fail();
         }
     }
@@ -72,11 +76,11 @@ public class TestMiner  {
         Bundle state = new Bundle();
         state.putInt("score" , 1000);
 
-        Intent i = new Intent();
-        i.putExtras(state);
+        Intent intent = new Intent();
+        intent.putExtras(state);
 
-        records = mActivityRuleRecords.launchActivity(i);
+        records = mActivityRuleRecords.launchActivity(intent);
 
-        onView(withId(RecordsActivity.REGISTERPLAYER.IDSCORE)).check(matches(withText("1000")));
+        // onView(withId(RecordsActivity.REGISTERPLAYER.IDSCORE)).check(matches(withText(R.string.game_score)));
     }
 }
