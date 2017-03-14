@@ -3,18 +3,17 @@ package es.urjc.mov.javsan.miner;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 class RadarUI {
 
-    private static final int SIZESCORE = 20;
+    private static final int SIZESRADAR = 25;
 
     private MinerActivity activity;
     private Radar radar;
-    private View scoreView;
+    private View numRadarsView;
 
     RadarUI (MinerActivity a, MinerGame game, ImagesMap img, Radar r) {
         activity = a;
@@ -31,48 +30,34 @@ class RadarUI {
         refreshRadar();
     }
 
+    public void refreshRadar() {
+        TextView t = (TextView) numRadarsView;
+
+        t.setText(String.valueOf(radar.getNumRadars()));
+    }
+
     private void createRadar(MinerGame game, ImagesMap img) {
-        float weigth = 1.0f / (float) MinerActivity.ROWS;
-        TableLayout tab = (TableLayout) activity.findViewById(R.id.map);
-        TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.MATCH_PARENT, 0, weigth);
-        TableRow row = new TableRow(activity);
-
-        row.setLayoutParams(rows);
-        row.setGravity(Gravity.CENTER);
-        row.addView(getButton(game, img));
-        row.addView(getNumRadars());
-        tab.addView(row);
+        setButton(game, img);
+        setNumRadars();
     }
 
-    private Button getButton(MinerGame game, ImagesMap img) {
-        Button rad = new Button(activity);
+    private void setButton(MinerGame game, ImagesMap img) {
+        Button rad = (Button) activity.findViewById(R.id.buton_radar);
 
-        rad.setText(R.string.radar);
-        rad.setLayoutParams(new TableRow.LayoutParams(0,
-                TableRow.LayoutParams.MATCH_PARENT, 0.6f));
+        rad.setTextSize(SIZESRADAR);
+
         rad.setOnClickListener(new RadarEvent(game, img));
-
-        return rad;
     }
 
-    private TextView getNumRadars() {
-        TextView t = new TextView(activity);
+    private void setNumRadars() {
+        TextView t = (TextView) activity.findViewById(R.id.num_radar);
 
         t.setText(String.valueOf(radar.getNumRadars()));
-        t.setLayoutParams(new TableRow.LayoutParams(0,
-                TableRow.LayoutParams.MATCH_PARENT, 0.4f));
+
         t.setGravity(Gravity.CENTER);
-        t.setTextSize(SIZESCORE);
+        t.setTextSize(SIZESRADAR);
 
-        scoreView = t;
-
-        return t;
-    }
-
-    private void refreshRadar() {
-        TextView t = (TextView) scoreView;
-        t.setText(String.valueOf(radar.getNumRadars()));
+        numRadarsView = t;
     }
 
     private class RadarEvent implements View.OnClickListener {
@@ -113,8 +98,7 @@ class RadarUI {
 
         private void msgDisable () {
             int time = Toast.LENGTH_SHORT;
-            String txt = "The radar is disable...";
-            Toast msg = Toast.makeText(activity , txt , time);
+            Toast msg = Toast.makeText(activity , R.string.radar_disable, time);
 
             msg.show();
         }

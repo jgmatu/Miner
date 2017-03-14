@@ -1,7 +1,11 @@
 package es.urjc.mov.javsan.miner;
 
 class SoundControl {
-    private static final int TIMESOUND = 5000;
+    private final int TIMESOUND;
+
+    SoundControl (int time) {
+        TIMESOUND = time;
+    }
 
     public synchronized void waitSound() throws InterruptedException {
         wait(TIMESOUND);

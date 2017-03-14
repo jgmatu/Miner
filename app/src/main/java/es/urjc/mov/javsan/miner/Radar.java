@@ -19,10 +19,12 @@ class Radar {
 
     boolean[][] setScan (MinerGame game) {
         numRadars--;
+        active = true;
         return getScan(game);
     }
 
     boolean[][] setClean (MinerGame game) {
+        active = false;
         return getScan(game);
     }
 

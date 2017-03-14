@@ -20,17 +20,17 @@ import java.util.ArrayList;
 
 public class MinerActivity extends AppCompatActivity {
 
-    //public static final String TAG = "Mines Debug : ";
+    public static final String TAG = "Mines Debug : ";
 
-    public static final int BUTTRADAR = 1;
-    public static final int ROWS = 10;
-    public static final int COLUMNS = 10;
+    public static final int BUTTRADAR = 2;
+    public static final int ROWS = 12;
+    public static final int COLUMNS = 12;
     public static final int SEED = 4;
     public static final int EASY = 10;
     public static final int RADARS = 5;
-    private static final int SCORES = 1;
-    private static final int SIZEROWSTABLE = BUTTRADAR + ROWS + SCORES;
     private static final int SIZESCORE = 25;
+
+    public static final int SIZEROWSTABLE = BUTTRADAR + ROWS;
 
     static class VIEWS {
         private static final int IDSCORE = 0;
@@ -47,7 +47,8 @@ public class MinerActivity extends AppCompatActivity {
 
     private boolean debug = true;
     private boolean isShowLostMines = false;
-    private int seed;
+    private int seed = 0;
+
 
     private SoundControl soundControl;
     private TestUIControl testControl;
@@ -67,6 +68,7 @@ public class MinerActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.new_game:
+                exitPrevTestUI();
                 newGame();
                 return true;
             case R.id.help:
@@ -113,9 +115,9 @@ public class MinerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mines);
 
         seed = SEED;
-        soundControl = null;
-        testControl = null;
         views = new View[VIEWS.NUMVIEWS];
+        debug = true;
+        isShowLostMines = false;
 
         if (savedInstanceState != null) {
             seed = savedInstanceState.getInt("seed");
@@ -124,23 +126,30 @@ public class MinerActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             setStateActivity(savedInstanceState);
         }
+        soundControl = null;
+        testControl = null;
         soundMoves = null;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
+
+        state.putInt("score", game.getScore());
         state.putInt("seed", seed);
         state.putInt("radars", radarUI.getRadar().getNumRadars());
         state.putIntegerArrayList("moves", game.savedMoves());
     }
 
     private void setStateActivity(Bundle state) {
-        restoreRadar(state);
         restoreMap(state);
+        restoreRadar(state);
+
         if (game.isWinGame()) {
             imagesGame.showWin();
         }
+        refreshScore();
+        radarUI.refreshRadar();
     }
 
     private void restoreRadar(Bundle state) {
@@ -157,6 +166,7 @@ public class MinerActivity extends AppCompatActivity {
         if (moves == null) {
             return;
         }
+
         for (Integer m : moves) {
             Point p = new Point(m / COLUMNS, m % COLUMNS);
 
@@ -173,6 +183,7 @@ public class MinerActivity extends AppCompatActivity {
     private void createGame(int s) {
         imagesMap = new ImagesMap(new Point(ROWS, COLUMNS));
         game = new MinerGame(new Point(ROWS, COLUMNS) , s , EASY);
+        addScore();
         createMinerMapUI();
         imagesGame = new ImagesGame(this);
         createRadar();
@@ -182,31 +193,20 @@ public class MinerActivity extends AppCompatActivity {
         radarUI = new RadarUI(this, game, imagesMap, new Radar(RADARS));
     }
 
-    private void toastMsg(String txt) {
-        int time = Toast.LENGTH_SHORT;
-        Toast msg = Toast.makeText(this, txt, time);
-
-        msg.show();
-    }
-
     private void debPlayingUI(boolean win) {
         exitPrevTestUI();
+        cleanScan();
         createTestUI(win);
     }
 
     private void createTestUI(boolean win) {
-        exitPrevTestUI();
-        cleanScan();
         if (!game.isEndGame()) {
-            Log.v("TRACE", "DEMO PLAY");
             testControl = new TestUIControl();
             new TestUI(game, imagesMap, win, testControl).execute();
         }
     }
 
     private void newGame() {
-        exitPrevTestUI();
-
         seed = game.getSeed();
         game.restart();
         imagesMap.restart();
@@ -216,6 +216,7 @@ public class MinerActivity extends AppCompatActivity {
         stopSound();
         refreshScore();
         cleanScan();
+        radarUI.refreshRadar();
     }
 
     private void stopSound() {
@@ -229,13 +230,12 @@ public class MinerActivity extends AppCompatActivity {
 
         TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
                 TableLayout.LayoutParams.MATCH_PARENT, 0,
-                1.0f / (float) (SIZEROWSTABLE));
+                1.0f / (float) SIZEROWSTABLE);
 
         TableRow.LayoutParams imgDesign = new TableRow.LayoutParams(
                 0, TableRow.LayoutParams.MATCH_PARENT,
                 1.0f / (float) COLUMNS);
 
-        table.addView(addScore());
         for (int i = 0; i < ROWS; i++) {
             TableRow row = new TableRow(this);
             row.setLayoutParams(rows);
@@ -256,32 +256,14 @@ public class MinerActivity extends AppCompatActivity {
         table.setGravity(Gravity.CENTER);
     }
 
-    private TableRow addScore() {
-        TableRow row = new TableRow(this);
-        TextView name = new TextView(this);
-        TextView score = new TextView(this);
+    private void addScore() {
+        TextView score = (TextView) findViewById(R.id.game_score);
 
-        name.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.MATCH_PARENT,
-                0.8f));
-
-        score.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.MATCH_PARENT,
-                0.2f));
-
-        name.setText(R.string.game_score);
         score.setText("0");
-        name.setTextSize(SIZESCORE);
+
         score.setTextSize(SIZESCORE);
 
         views[VIEWS.IDSCORE] = score;
-
-        row.addView(name);
-        row.addView(score);
-
-        return row;
     }
 
     private ImageButton initialButton(TableRow.LayoutParams design, Point point) {
@@ -343,7 +325,7 @@ public class MinerActivity extends AppCompatActivity {
                 if (!debug) {
                     showWin();
                 }
-                toastMsg("WIN!");
+                toastMsg(R.string.win_info);
             }
         }
 
@@ -372,6 +354,7 @@ public class MinerActivity extends AppCompatActivity {
         private void showLost() {
             if (game.isLostGame() && !debug && isShowLostMines) {
                 imagesGame.showLost();
+                toastMsg(R.string.lost_info);
             }
         }
 
@@ -379,7 +362,7 @@ public class MinerActivity extends AppCompatActivity {
             Records records = new Records(MinerActivity.this);
 
             if (records.isRecord(score)) {
-                Intent i = new Intent(MinerActivity.this, RecordsActivity.class);
+                Intent i = new Intent(MinerActivity.this, RecordsFragAc.class);
                 i.putExtra("score", score);
                 startActivity(i);
             }
@@ -387,6 +370,7 @@ public class MinerActivity extends AppCompatActivity {
 
         private int setGoodMove(Point p) {
             int mines = game.getMines(p);
+
             stopSound();
             startSound(p);
             if (mines == 0) {
@@ -410,7 +394,8 @@ public class MinerActivity extends AppCompatActivity {
         }
 
         private void boomSound() {
-            soundControl = new SoundControl();
+            int time = 5000;
+            soundControl = new SoundControl(time);
             new SoundAudio(MinerActivity.this, soundControl , R.raw.explosion).execute();
         }
 
@@ -432,9 +417,24 @@ public class MinerActivity extends AppCompatActivity {
 
         private void startSound(Point p) {
             if (game.isHidden(p)) {
-                soundMoves = new SoundControl();
+                int time = 1;
+                soundMoves = new SoundControl(time);
                 new SoundTone(game.getMines(p) * 100 + 500, soundMoves).execute();
             }
         }
+    }
+
+    private void toastMsg(String txt) {
+        int time = Toast.LENGTH_SHORT;
+        Toast msg = Toast.makeText(this, txt, time);
+
+        msg.show();
+    }
+
+    private void toastMsg(int txt) {
+        int time = Toast.LENGTH_SHORT;
+        Toast msg = Toast.makeText(this, txt, time);
+
+        msg.show();
     }
 }

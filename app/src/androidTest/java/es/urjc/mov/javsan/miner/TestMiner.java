@@ -2,29 +2,30 @@ package es.urjc.mov.javsan.miner;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.test.espresso.ViewAssertion;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.view.View;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static java.util.regex.Pattern.matches;
 import static junit.framework.Assert.fail;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class TestMiner  {
+public class TestMiner {
 
     private MinerActivity miner;
     private RecordsActivity records;
@@ -47,40 +48,105 @@ public class TestMiner  {
 
     @Rule
     public ActivityTestRule<RecordsActivity> mActivityRuleRecords = new ActivityTestRule<RecordsActivity>(
-            RecordsActivity.class, false , false) {
+            RecordsActivity.class, false, false) {
     };
 
     @Test
     public void typeTextInInput_clickButton_SubmitsForm() {
-        // Lazily launch the Activity with a custom start Intent per test.
-        miner = mActivityRuleMiner.getActivity();
+        miner = mActivityRuleMiner.launchActivity(new Intent());
 
         MinerGame game = miner.getGame();
+        int numRadars = MinerActivity.RADARS;
 
-        for (int i = 0 ; i < game.getRows() * game.getCols() ; i++) {
-           if (!game.isFail(new Point(i / game.getRows(), i % game.getCols()))) {
+        for (int i = 0; i < game.getRows() * game.getCols(); i++) {
+            if (!game.isFail(new Point(i / game.getRows(), i % game.getCols()))) {
                 onView(withId(i)).perform(click());
-           }
-           if (game.isEndGame()) {
-               break;
-           }
+            }
+            if (game.isEndGame()) {
+                break;
+            }
+            numRadars = checkNumRadars(numRadars);
+            checkScore(game);
         }
 
         if (!game.isWinGame()) {
             fail();
         }
     }
+    private int checkNumRadars (int numRadars) {
+        onView(withText(R.string.radar)).perform(click());
+
+        if (numRadars > 0) {
+            numRadars--;
+        }
+        onView(withText(String.valueOf(numRadars))).check(matches(isDisplayed()));
+        return numRadars;
+    }
+
+    private void checkScore(MinerGame game) {
+        onView(withText(String.valueOf(game.getScore()))).check(matches(isDisplayed()));
+    }
 
     @Test
     public void record_isCorrect() {
+        records = mActivityRuleRecords.launchActivity(initActivity());
+        Records r = new Records(records);
+
+        // Default player name...
+        onView(withId(R.id.player_name)).check(matches(isDisplayed()));
+
+        // Score get in miner...
+        onView(withText(String.valueOf(Integer.MAX_VALUE))).check(matches(isDisplayed()));
+
+        // Type new player test...
+        onView(withId(R.id.player_name)).perform(typeText("Test"), closeSoftKeyboard());
+        onView(withId(R.id.confirm_record)).perform(click());
+
+        // Show if is in the table of records player test...
+        onView(withText("Test")).check(matches(isDisplayed()));
+        onView(withText(String.valueOf(Integer.MAX_VALUE))).check(matches(isDisplayed()));
+        onView(withText(R.string.play)).check(matches(isDisplayed()));
+
+        // Comeback to game...
+        onView(withText(R.string.play)).perform(click());
+        onView(withText(R.string.radar)).check(matches(isDisplayed()));
+
+        checkScores(r);
+    }
+
+    private Intent initActivity () {
         Bundle state = new Bundle();
-        state.putInt("score" , 1000);
+        state.putInt("score", Integer.MAX_VALUE);
 
         Intent intent = new Intent();
         intent.putExtras(state);
 
-        records = mActivityRuleRecords.launchActivity(intent);
+        return intent;
+    }
 
-        // onView(withId(RecordsActivity.REGISTERPLAYER.IDSCORE)).check(matches(withText(R.string.game_score)));
+    private void checkScores(Records r) {
+        HashMap <String, Integer> scores = r.getScores();
+        if (scores ==  null) {
+            return;
+        }
+        if (scores.size() > Records.TOP) {
+            fail();
+        }
+        checkSortScores(r);
+    }
+
+    private void checkSortScores(Records r) {
+        Object[] o = r.sortedByValues();
+        int minValue = Integer.MAX_VALUE;
+
+        for (Object e : o) {
+            int val = ((HashMap.Entry<String, Integer>) e).getValue();
+
+            if (val <= minValue) {
+                minValue = val;
+            } else {
+                fail();
+            }
+        }
     }
 }

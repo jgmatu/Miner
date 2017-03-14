@@ -8,4 +8,7 @@
     <string name="confirm_record">Confirm Record</string>
     <string name="player">Player</string>
     <string name="play">Go Play!</string>
+    <string name="lost_info">Game Lost!</string>
+    <string name="win_info">Game Win!</string>
+    <string name="radar_disable">Radar is disable!</string>
 </resources>

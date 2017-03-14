@@ -15,6 +15,7 @@ class MinerGame {
     private ArrayList<Integer> movesGame;
     private int score;
     private int seed;
+//     private int savedScore;
 
     MinerGame(Point limits , int s, int e) {
         map = new Map(limits, e);

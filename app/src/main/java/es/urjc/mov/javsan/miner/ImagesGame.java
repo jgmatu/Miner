@@ -5,8 +5,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 
-
-
 class ImagesGame {
 
     private TableLayout table;

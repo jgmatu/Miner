@@ -1,6 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.BufferedReader;
@@ -15,23 +16,32 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 class Records {
-    private static final String fileRecords = "records.txt";
-    private static final int TOP = 10;
+    public static final int TOP = 10;
 
-    private AppCompatActivity activity;
+    private static final String fileRecords = "records.txt";
+
+    private FragmentActivity activity;
     private HashMap<String, Integer> scores;
 
-    Records (AppCompatActivity a) {
+    Records (FragmentActivity a) {
         activity = a;
         scores = new HashMap<>();
         readRecords();
     }
 
-    boolean isRecord(int score) {
+    public HashMap<String, Integer> getScores() {
+        return scores;
+    }
+
+    public boolean isRecord(int score) {
         return (scores.size() < TOP || isTop(score)) && score > 0;
     }
 
-    void newRecord(String name, int score) {
+    public void newRecord(String name, int score) {
+        if (isWorseScore(name, score)) {
+            return;
+        }
+
         scores.put(name, score);
         if (scores.size() > TOP) {
             delLastScore();
@@ -52,7 +62,7 @@ class Records {
         return result;
     }
 
-    Object[] sortedByValues() {
+    public Object[] sortedByValues() {
         Object[] a = scores.entrySet().toArray();
 
         Arrays.sort(a, new Comparator() {
@@ -65,6 +75,9 @@ class Records {
         return a;
     }
 
+    private boolean isWorseScore(String name, int score) {
+        return scores.get(name) != null && scores.get(name) >= score;
+    }
 
     private void delLastScore() {
         String keyMin = "";
@@ -94,7 +107,6 @@ class Records {
         FileOutputStream fos = null;
 
         try {
-
             fos = activity.openFileOutput(fileRecords, Context.MODE_PRIVATE);
 
             for (HashMap.Entry<String, Integer> entry : scores.entrySet()) {

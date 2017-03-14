@@ -20,10 +20,10 @@ public class TestSound {
     @Test
     public void sound_isCorrect() throws Exception {
         for (int i = 0 ; i < 10 ; i++) {
-            SoundControl soundControl = new SoundControl();
+            int time = 1;
+            SoundControl soundControl = new SoundControl(time);
             SoundTone soundTone = new SoundTone(50 * i + 500, soundControl);
             soundTone.execute();
-            SystemClock.sleep(1000);
             soundControl.endSound();
         }
     }
