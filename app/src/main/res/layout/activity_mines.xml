@@ -2,31 +2,35 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_git"
+    android:id="@+id/activity_miner"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="es.urjc.mov.javsan.miner.MinerActivity">
 
-    <!-- Distribruir los pesos... -->
+    <!-- Distribruido por pesos... -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1">
+        android:layout_weight="0.1"
+        android:layout_gravity="center"
+        android:gravity="center">
 
         <TextView
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:text="@string/game_score"
-            android:textSize="24dp"/>
+            android:textSize="24dp"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/game_score"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"/>
+            android:layout_weight="0.5"
+            android:gravity="center"/>
 
     </LinearLayout>
 
@@ -51,7 +55,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.8"
             android:text="@string/radar"
-            android:textSize="24dp"/>
+            android:textSize="24dp"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/num_radar"
@@ -59,7 +64,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.2"
             android:text="0"
-            android:textSize="29dp"/>
+            android:textSize="29dp"
+            android:gravity="center"/>
 
     </LinearLayout>
 

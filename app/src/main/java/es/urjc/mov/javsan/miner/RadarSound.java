@@ -1,6 +1,8 @@
 package es.urjc.mov.javsan.miner;
 
 
+import android.os.AsyncTask;
+
 class RadarSound {
     private MinerActivity activity;
     private SoundControl control;
@@ -12,7 +14,7 @@ class RadarSound {
     }
 
     void play() {
-        new SoundAudio(activity, control, R.raw.radar).execute();
+        new SoundAudio(activity, control, R.raw.radar).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     void stop() {

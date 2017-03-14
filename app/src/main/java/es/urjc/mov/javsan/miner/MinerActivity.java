@@ -23,8 +23,8 @@ public class MinerActivity extends AppCompatActivity {
     public static final String TAG = "Mines Debug : ";
 
     public static final int BUTTRADAR = 2;
-    public static final int ROWS = 12;
-    public static final int COLUMNS = 12;
+    public static final int ROWS = 8;
+    public static final int COLUMNS = 8;
     public static final int SEED = 4;
     public static final int EASY = 10;
     public static final int RADARS = 5;
@@ -137,7 +137,7 @@ public class MinerActivity extends AppCompatActivity {
 
         state.putInt("score", game.getScore());
         state.putInt("seed", seed);
-        state.putInt("radars", radarUI.getRadar().getNumRadars());
+        state.putInt("radars", radarUI.getNumRadars());
         state.putIntegerArrayList("moves", game.savedMoves());
     }
 
@@ -156,8 +156,8 @@ public class MinerActivity extends AppCompatActivity {
         int numRadars = state.getInt("radars");
 
         for (int i = numRadars ; i < RADARS; i++) {
-            radarUI.getRadar().setScan(game);
-            radarUI.getRadar().setClean(game);
+            radarUI.setScan(game);
+            radarUI.setClean(game);
         }
     }
 
@@ -282,7 +282,7 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void cleanScan() {
-        boolean[][] isClean = radarUI.getRadar().setClean(game);
+        boolean[][] isClean = radarUI.setClean(game);
 
         for (int i = 0 ; i < game.getRows(); i++) {
             for (int j = 0 ; j < game.getCols(); j++) {
@@ -417,7 +417,7 @@ public class MinerActivity extends AppCompatActivity {
 
         private void startSound(Point p) {
             if (game.isHidden(p)) {
-                int time = 1;
+                int time = 1500;
                 soundMoves = new SoundControl(time);
                 new SoundTone(game.getMines(p) * 100 + 500, soundMoves).execute();
             }

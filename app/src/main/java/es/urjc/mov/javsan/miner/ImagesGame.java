@@ -2,7 +2,7 @@ package es.urjc.mov.javsan.miner;
 
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
 class ImagesGame {
@@ -23,12 +23,12 @@ class ImagesGame {
         win.setImageResource(R.mipmap.win_image);
         win.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        win.setLayoutParams(new RelativeLayout.LayoutParams(
+        win.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
         // Set table...
-        table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
+        table.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
     }
 
     void showLost() {
@@ -37,23 +37,22 @@ class ImagesGame {
         lost.setImageResource(R.mipmap.image_lost);
         lost.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        lost.setLayoutParams(new RelativeLayout.LayoutParams(
+        lost.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
         // Set table...
-        table.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));
+        table.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
     }
 
     void showMap () {
 
         // Hidden win or lost image...
-        win.setLayoutParams(new RelativeLayout.LayoutParams(0 , 0));
-        lost.setLayoutParams(new RelativeLayout.LayoutParams(0 , 0));
+        win.setLayoutParams(new LinearLayout.LayoutParams(0 , 0));
+        lost.setLayoutParams(new LinearLayout.LayoutParams(0 , 0));
 
         // Show new table...
-        table.setLayoutParams(new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+        table.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0 , 0.8f));
     }
 }

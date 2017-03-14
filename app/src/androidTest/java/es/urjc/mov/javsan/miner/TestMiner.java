@@ -2,6 +2,7 @@ package es.urjc.mov.javsan.miner;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -14,21 +15,25 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.fail;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class TestMiner {
 
     private MinerActivity miner;
-    private RecordsActivity records;
+    private RecordsFragAc records;
 
     /**
      * A JUnit {@link Rule @Rule} to launch your miner under test. This is a replacement
@@ -47,28 +52,32 @@ public class TestMiner {
     };
 
     @Rule
-    public ActivityTestRule<RecordsActivity> mActivityRuleRecords = new ActivityTestRule<RecordsActivity>(
-            RecordsActivity.class, false, false) {
+    public ActivityTestRule<RecordsFragAc> mActivityRuleRecords = new ActivityTestRule<RecordsFragAc>(
+            RecordsFragAc.class, false, false) {
     };
 
     @Test
-    public void typeTextInInput_clickButton_SubmitsForm() {
+    public void game_isCorrect() {
         miner = mActivityRuleMiner.launchActivity(new Intent());
 
         MinerGame game = miner.getGame();
         int numRadars = MinerActivity.RADARS;
 
         for (int i = 0; i < game.getRows() * game.getCols(); i++) {
-            if (!game.isFail(new Point(i / game.getRows(), i % game.getCols()))) {
-                onView(withId(i)).perform(click());
-            }
+            Point p = new Point(i / game.getRows(), i % game.getCols());
+
             if (game.isEndGame()) {
                 break;
             }
+
+            if (!game.isHidden(p) || game.isFail(p)) {
+                continue;
+            }
+
+            onView(withId(i)).perform(click());
             numRadars = checkNumRadars(numRadars);
             checkScore(game);
         }
-
         if (!game.isWinGame()) {
             fail();
         }
@@ -89,34 +98,57 @@ public class TestMiner {
 
     @Test
     public void record_isCorrect() {
-        records = mActivityRuleRecords.launchActivity(initActivity());
+        int score = Integer.MAX_VALUE;
+        records = mActivityRuleRecords.launchActivity(initActivity(score));
         Records r = new Records(records);
 
         // Default player name...
         onView(withId(R.id.player_name)).check(matches(isDisplayed()));
 
         // Score get in miner...
-        onView(withText(String.valueOf(Integer.MAX_VALUE))).check(matches(isDisplayed()));
+        onView(withText(String.valueOf(score))).check(matches(isDisplayed()));
 
         // Type new player test...
+        onView(withId(R.id.player_name)).perform(clearText(), closeSoftKeyboard());
         onView(withId(R.id.player_name)).perform(typeText("Test"), closeSoftKeyboard());
         onView(withId(R.id.confirm_record)).perform(click());
 
         // Show if is in the table of records player test...
         onView(withText("Test")).check(matches(isDisplayed()));
-        onView(withText(String.valueOf(Integer.MAX_VALUE))).check(matches(isDisplayed()));
+        onView(withText(String.valueOf(score))).check(matches(isDisplayed()));
         onView(withText(R.string.play)).check(matches(isDisplayed()));
-
-        // Comeback to game...
-        onView(withText(R.string.play)).perform(click());
-        onView(withText(R.string.radar)).check(matches(isDisplayed()));
 
         checkScores(r);
     }
 
-    private Intent initActivity () {
+    @Test
+    public void record_minIsCorrect() {
+        int score = 50;
+        records = mActivityRuleRecords.launchActivity(initActivity(score));
+        Records r = new Records(records);
+
+        // Default player name...
+        onView(withId(R.id.player_name)).check(matches(isDisplayed()));
+
+        // Score get in miner...
+        onView(withText(String.valueOf(score))).check(matches(isDisplayed()));
+
+        // Type new player test...
+        onView(withId(R.id.player_name)).perform(clearText(), closeSoftKeyboard());
+        onView(withId(R.id.player_name)).perform(typeText("TestMin"), closeSoftKeyboard());
+        onView(withId(R.id.confirm_record)).perform(click());
+
+        // Show if is in the table of records player test...
+        onView(withText("TestMin")).check(doesNotExist());
+        onView(withText(String.valueOf(score))).check(doesNotExist());
+        onView(withText(R.string.play)).check(matches(isDisplayed()));
+
+        checkScores(r);
+    }
+
+    private Intent initActivity (int score) {
         Bundle state = new Bundle();
-        state.putInt("score", Integer.MAX_VALUE);
+        state.putInt("score", score);
 
         Intent intent = new Intent();
         intent.putExtras(state);

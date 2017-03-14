@@ -13,16 +13,14 @@ class RadarUI {
 
     private MinerActivity activity;
     private Radar radar;
+    private RadarSound radarSound;
     private View numRadarsView;
 
     RadarUI (MinerActivity a, MinerGame game, ImagesMap img, Radar r) {
         activity = a;
         radar = r;
+        radarSound = new RadarSound(activity);
         createRadar(game, img);
-    }
-
-    public Radar getRadar() {
-        return radar;
     }
 
     public void restart(int nRadar) {
@@ -34,6 +32,20 @@ class RadarUI {
         TextView t = (TextView) numRadarsView;
 
         t.setText(String.valueOf(radar.getNumRadars()));
+    }
+
+    public boolean[][] setScan(MinerGame game) {
+        radarSound.play();
+        return radar.setScan(game);
+    }
+
+    public boolean[][] setClean(MinerGame game) {
+        radarSound.stop();
+        return radar.setClean(game);
+    }
+
+    public int getNumRadars() {
+        return radar.getNumRadars();
     }
 
     private void createRadar(MinerGame game, ImagesMap img) {
@@ -84,7 +96,7 @@ class RadarUI {
         }
 
         private void showScan() {
-            boolean[][] isScan = radar.setScan(game);
+            boolean[][] isScan = setScan(game);
 
             for (int i = 0 ; i < game.getRows() ; i++) {
                 for (int j = 0 ; j < game.getCols(); j++) {
