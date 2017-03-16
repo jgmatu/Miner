@@ -30,10 +30,7 @@ class SoundTone extends AsyncTask<String, String, String> {
             genTone();
             AudioTrack audioTrack = playSound();
             audioTrack.write(generatedSnd, 0, generatedSnd.length);
-            audioTrack.play();
-            control.waitSound();
-            audioTrack.stop();
-            audioTrack.release();
+            control.waitSound(audioTrack);
 
         } catch (InterruptedException e) {
         }

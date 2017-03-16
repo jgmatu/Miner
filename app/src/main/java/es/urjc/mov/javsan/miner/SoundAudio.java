@@ -15,10 +15,7 @@ class SoundAudio extends AsyncTask<String , String , String> {
     @Override
     protected String doInBackground(String... params) {
         try {
-            sound.start();
-            control.waitSound();
-            sound.stop();
-            sound.release();
+            control.waitSound(sound);
         } catch (InterruptedException e) {
         }
         return "";

@@ -1,6 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -46,11 +47,11 @@ public class MinerActivity extends AppCompatActivity {
     private ImagesGame imagesGame;
 
     private boolean debug = true;
-    private boolean isShowLostMines = false;
-    private int seed = 0;
+    private boolean isShowLostMines;
+    private int seed;
 
 
-    private SoundControl soundControl;
+    private SoundControl soundMedia;
     private TestUIControl testControl;
     private SoundControl soundMoves;
 
@@ -126,18 +127,24 @@ public class MinerActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             setStateActivity(savedInstanceState);
         }
-        soundControl = null;
-        testControl = null;
-        soundMoves = null;
+
+        int time = 1500;
+        soundMoves = new SoundControl(time);
+
+        time = 5000;
+        soundMedia = new SoundControl(time);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
 
-        state.putInt("score", game.getScore());
+        state.putInt("score", game.getSavedScore());
         state.putInt("seed", seed);
-        state.putInt("radars", radarUI.getNumRadars());
+
+        Log.v("TRACE : ", String.format("Seed saved : %d", seed));
+
+        state.putIntegerArrayList("radars", radarUI.getRadarsUsed());
         state.putIntegerArrayList("moves", game.savedMoves());
     }
 
@@ -153,11 +160,17 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void restoreRadar(Bundle state) {
-        int numRadars = state.getInt("radars");
+        ArrayList<Integer> radars = state.getIntegerArrayList("radars");
 
-        for (int i = numRadars ; i < RADARS; i++) {
-            radarUI.setScan(game);
-            radarUI.setClean(game);
+
+        for (Integer s : radars) {
+            if (s == Radar.STATES.USED) {
+                radarUI.setScan(game);
+                radarUI.setClean(game);
+            }
+            if (s == Radar.STATES.ACTIVED) {
+                radarUI.showScan(game, imagesMap);
+            }
         }
     }
 
@@ -181,8 +194,8 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void createGame(int s) {
-        imagesMap = new ImagesMap(new Point(ROWS, COLUMNS));
         game = new MinerGame(new Point(ROWS, COLUMNS) , s , EASY);
+        imagesMap = new ImagesMap(new Point(ROWS, COLUMNS));
         addScore();
         createMinerMapUI();
         imagesGame = new ImagesGame(this);
@@ -207,27 +220,20 @@ public class MinerActivity extends AppCompatActivity {
     }
 
     private void newGame() {
-        seed = game.getSeed();
         game.restart();
+        seed = game.getSeed();
         imagesMap.restart();
         radarUI.restart(RADARS);
         imagesGame.showMap();
         isShowLostMines = false;
-        stopSound();
+        soundMedia.endSound();
         refreshScore();
         cleanScan();
         radarUI.refreshRadar();
     }
 
-    private void stopSound() {
-        if (soundControl != null) {
-            soundControl.endSound();
-        }
-    }
-
     private void createMinerMapUI() {
         TableLayout table = (TableLayout) findViewById(R.id.map);
-
         TableLayout.LayoutParams rows = new TableLayout.LayoutParams(
                 TableLayout.LayoutParams.MATCH_PARENT, 0,
                 1.0f / (float) SIZEROWSTABLE);
@@ -260,7 +266,6 @@ public class MinerActivity extends AppCompatActivity {
         TextView score = (TextView) findViewById(R.id.game_score);
 
         score.setText("0");
-
         score.setTextSize(SIZESCORE);
 
         views[VIEWS.IDSCORE] = score;
@@ -270,7 +275,7 @@ public class MinerActivity extends AppCompatActivity {
         ImageButton imgBut = new ImageButton(this);
 
         // Desing properties...
-        imgBut.setPadding(0, 0, 0, 0);
+        imgBut.setPadding(0 , 0 , 0 , 0);
         imgBut.setLayoutParams(design);
         imgBut.setScaleType(ImageView.ScaleType.FIT_XY);
 
@@ -303,6 +308,9 @@ public class MinerActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+            if (!game.isHidden(point)) {
+                return;
+            }
 
             if (game.isEndGame()) {
                 showImage();
@@ -315,8 +323,8 @@ public class MinerActivity extends AppCompatActivity {
             showWinGame();
 
             if (game.isLostGame()) {
-                stopSound();
-                saveRecordScore(score);
+                soundMoves.endSound();
+                newRecordScore(score);
             }
         }
 
@@ -358,7 +366,7 @@ public class MinerActivity extends AppCompatActivity {
             }
         }
 
-        private void saveRecordScore(int score) {
+        private void newRecordScore(int score) {
             Records records = new Records(MinerActivity.this);
 
             if (records.isRecord(score)) {
@@ -371,7 +379,7 @@ public class MinerActivity extends AppCompatActivity {
         private int setGoodMove(Point p) {
             int mines = game.getMines(p);
 
-            stopSound();
+            soundMoves.endSound();
             startSound(p);
             if (mines == 0) {
                 floodEmptySquares();
@@ -379,24 +387,22 @@ public class MinerActivity extends AppCompatActivity {
             showImage(mines);
             game.move(p);
 
-            return game.getScore();
+            return game.getSavedScore();
         }
 
         private int setBadMove(Point p) {
-            int score = game.getScore();
+            int score = game.getSavedScore();
 
             game.setLostGame(p);
             imagesMap.showMapLost(game, p);
             isShowLostMines = true;
-            stopSound();
+            soundMoves.endSound();
             boomSound();
             return score;
         }
 
         private void boomSound() {
-            int time = 5000;
-            soundControl = new SoundControl(time);
-            new SoundAudio(MinerActivity.this, soundControl , R.raw.explosion).execute();
+            new SoundAudio(MinerActivity.this, soundMedia, R.raw.explosion).execute();
         }
 
         private void floodEmptySquares() {
@@ -409,17 +415,9 @@ public class MinerActivity extends AppCompatActivity {
             }
         }
 
-        private void stopSound() {
-            if (soundMoves != null) {
-                soundMoves.endSound();
-            }
-        }
-
         private void startSound(Point p) {
             if (game.isHidden(p)) {
-                int time = 1500;
-                soundMoves = new SoundControl(time);
-                new SoundTone(game.getMines(p) * 100 + 500, soundMoves).execute();
+                new SoundTone(game.getMines(p) * 100 + 500, soundMoves).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }

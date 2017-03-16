@@ -122,7 +122,7 @@ public class MinerLogicTest {
             game.move(p);
         }
 
-        if (game.isLostGame() && game.getScore() != 0) {
+        if (game.isLostGame() && game.getSavedScore() != 0) {
             fail();
         }
     }
@@ -130,6 +130,47 @@ public class MinerLogicTest {
     @Test
     public void testWinScore() {
         MinerGame game = new MinerGame(new Point(ROWS, COLUMNS), SEED, EASY);
+
+        win(game);
+
+        game.restart();
+        if (game.getSavedScore() == 0) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testScoreSaved() {
+        MinerGame game = new MinerGame(new Point(ROWS, COLUMNS), SEED, EASY);
+
+        win(game);
+        int score = game.getSavedScore();
+        game.restart();
+
+        if (game.getSavedScore() != score) {
+            fail();
+        }
+        for (int i = 0 ; i < 10 ; i++) {
+            for (int j = 1 ; j < 1 ; j++) {
+                Point p = new Point(i , j);
+                if (!game.isFail(p)) {
+                    game.move(p);
+                }
+            }
+        }
+        game.restart();
+
+        if (game.getSavedScore() != score) {
+            fail();
+        }
+
+        if (!game.isEndGame()) {
+            // Comprobar que al reiniciar saved score es igual a score....
+            // Se ha reiniciado se debe poner la ultima puntuacion salvada.
+        }
+    }
+
+    private void win(MinerGame game) {
         Random rand = new Random(SEED);
 
         while (!game.isEndGame()) {
@@ -138,11 +179,8 @@ public class MinerLogicTest {
                 game.move(p);
             }
         }
-        game.restart();
-        if (game.getScore() == 0) {
-            fail();
-        }
     }
+
 
     private void restartMoves(MinerGame game) {
         game.restart();
@@ -152,7 +190,7 @@ public class MinerLogicTest {
         if (game.savedMoves().size() != 0) {
             fail();
         }
-        if (game.isWinGame() && game.getScore() == 0) {
+        if (game.isWinGame() && game.getSavedScore() == 0) {
             fail();
         }
     }

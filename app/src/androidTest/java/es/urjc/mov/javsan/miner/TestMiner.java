@@ -2,7 +2,6 @@ package es.urjc.mov.javsan.miner;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -25,8 +24,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.fail;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -78,10 +75,12 @@ public class TestMiner {
             numRadars = checkNumRadars(numRadars);
             checkScore(game);
         }
+
         if (!game.isWinGame()) {
             fail();
         }
     }
+
     private int checkNumRadars (int numRadars) {
         onView(withText(R.string.radar)).perform(click());
 
@@ -93,7 +92,7 @@ public class TestMiner {
     }
 
     private void checkScore(MinerGame game) {
-        onView(withText(String.valueOf(game.getScore()))).check(matches(isDisplayed()));
+        onView(withText(String.valueOf(game.getSavedScore()))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -127,6 +126,8 @@ public class TestMiner {
         records = mActivityRuleRecords.launchActivity(initActivity(score));
         Records r = new Records(records);
 
+        createRecords(r, score);
+
         // Default player name...
         onView(withId(R.id.player_name)).check(matches(isDisplayed()));
 
@@ -144,6 +145,12 @@ public class TestMiner {
         onView(withText(R.string.play)).check(matches(isDisplayed()));
 
         checkScores(r);
+    }
+
+    private void createRecords(Records r, int score) {
+        for (int i = 0 ; i < Records.TOP; i++) {
+            r.newRecord(String.valueOf(i), score * 2);
+        }
     }
 
     private Intent initActivity (int score) {
@@ -173,7 +180,6 @@ public class TestMiner {
 
         for (Object e : o) {
             int val = ((HashMap.Entry<String, Integer>) e).getValue();
-
             if (val <= minValue) {
                 minValue = val;
             } else {

@@ -1,11 +1,14 @@
 package es.urjc.mov.javsan.miner;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 class RadarUI {
 
@@ -44,8 +47,21 @@ class RadarUI {
         return radar.setClean(game);
     }
 
-    public int getNumRadars() {
-        return radar.getNumRadars();
+    public ArrayList<Integer> getRadarsUsed() {
+        return radar.getRadarsUsed();
+    }
+
+    public void showScan(MinerGame game, ImagesMap imagesMap) {
+        boolean[][] isScan = setScan(game);
+
+        for (int i = 0 ; i < game.getRows() ; i++) {
+            for (int j = 0 ; j < game.getCols(); j++) {
+                if (isScan[i][j]) {
+                    Point p = new Point(i , j);
+                    imagesMap.getImage(p).setImageResource(R.mipmap.radar);
+                }
+            }
+        }
     }
 
     private void createRadar(MinerGame game, ImagesMap img) {
@@ -90,23 +106,11 @@ class RadarUI {
             }
 
             if (radar.isEnable() && !game.isEndGame()) {
-                showScan();
+                showScan(game, imagesMap);
             }
             refreshRadar();
         }
 
-        private void showScan() {
-            boolean[][] isScan = setScan(game);
-
-            for (int i = 0 ; i < game.getRows() ; i++) {
-                for (int j = 0 ; j < game.getCols(); j++) {
-                    if (isScan[i][j]) {
-                        Point p = new Point(i , j);
-                        imagesMap.getImage(p).setImageResource(R.mipmap.radar);
-                    }
-                }
-            }
-        }
 
         private void msgDisable () {
             int time = Toast.LENGTH_SHORT;

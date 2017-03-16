@@ -1,5 +1,7 @@
 package es.urjc.mov.javsan.miner;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 class MinerGame {
@@ -14,6 +16,7 @@ class MinerGame {
     private int numMoves;
     private ArrayList<Integer> movesGame;
     private int score;
+    private int savedScore;
     private int seed;
 //     private int savedScore;
 
@@ -24,6 +27,15 @@ class MinerGame {
         ROWS = limits.getRow();
         COLS = limits.getCol();
         movesGame = new ArrayList<>();
+    }
+
+    public void restart() {
+        if (!isWinGame()) {
+            score = savedScore - score;
+        }
+        seed++;
+        numMoves = map.restart(seed);
+        movesGame.clear();
     }
 
     public boolean isLostGame() {
@@ -55,19 +67,13 @@ class MinerGame {
         }
         map.changeVisible(p);
         movesGame.add(p.getRow() * COLS + p.getCol());
+        if (isWinGame()) {
+            savedScore = score;
+        }
     }
 
     public ArrayList<Integer> savedMoves() {
         return movesGame;
-    }
-
-    public void restart() {
-        if (!isWinGame()) {
-            score = 0;
-        }
-        seed++;
-        numMoves = map.restart(seed);
-        movesGame.clear();
     }
 
     public boolean[][] fillSquares(Point p) {
@@ -108,7 +114,11 @@ class MinerGame {
         return COLS;
     }
 
-    public int getScore() {
+    public int getSavedScore() {
+        return savedScore;
+    }
+
+    public int getScore () {
         return score;
     }
 

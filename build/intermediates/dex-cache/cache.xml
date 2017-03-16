@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-compat/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ca3c7aa31e2726a400a6e552b93cb9f63c9a1e6d">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-compat-25.1.0_fb3ee3a779ffa2dcfa53e44674ec22c358e267af.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-idling-resource/2.2.2/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a890ee8445927649d9ed50f625a315d8758688be">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/com.android.support.test.espresso-espresso-idling-resource-2.2.2_7c7a5031150f326cf979db305af67754318dac0c.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e79aa3d9a16f8c9f16377c0608de70a8f31e5d80">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-25.1.0_1928ac4bcc114fa12ca443acfd7e02dc667cdc10.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/javax.annotation/javax.annotation-api/1.2/479c1e06db31c432330183f5cae684163f186146/javax.annotation-api-1.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="479c1e06db31c432330183f5cae684163f186146">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/javax.annotation-api-1.2_f0e4ee1a2d38aafb32657d01377b0937aa514240.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/2.0.1/516c03b21d50a644d538de0f0369c620989cd8f0/jsr305-2.0.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="516c03b21d50a644d538de0f0369c620989cd8f0">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/jsr305-2.0.1_a92428022c6f9dd73a5792937726a4889001b438.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="6fb6ac3e8d3b9013819920d9ea11f3803c4c0033">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-25.1.0_395a0d0f313ff2c57fc1c16a4b955dacaec22b79.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1630658fbc2d222b988603c27b4a4249586fbfe7">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-25.1.0_8f5e9151cf530653ee77f76e79665232b20c714f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="aee64634871d88a419d59eb743c1258a60f19700">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-core-ui-25.1.0_9f00341fe684d0ab879759c32a5162f179c9c5f0.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="6975da39a7040257bd51d21a231b76c915872d38">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/javax.inject-1_87b0a91bc0582d2263c82f3f8d4a79c9a30ea73d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/opt/android/extras/android/m2repository/com/android/support/support-annotations/25.1.0/support-annotations-25.1.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="64cb6b229a8bdfd907bc8dd46839a0053e4c018d">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/support-annotations-25.1.0_0642d82be3c31659ddda873a641e79ec844939cc.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="42a25dc3219429f0e5d060061f71acb49bf010a0">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/hamcrest-core-1.3_188b86db5372e3aa39f5bf80882b3a0270619b03.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/com.squareup/javawriter/2.1.1/67ff45d9ae02e583d0f9b3432a5ebbe05c30c966/javawriter-2.1.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="67ff45d9ae02e583d0f9b3432a5ebbe05c30c966">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/javawriter-2.1.1_7cc2d3ae180f3772e733078ff1fa42e373cfc862.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="2973d150c0dc1fefe998f834810d68f278ea58ec">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/junit-4.12_0973dea133270c087317ccf62cf81dc052aed667.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-v4/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-25.1.0_c8b64e539e51904b8d5b17e37c54dd05c9fc36d6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support.test.espresso/espresso-core/2.2.2/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d115b0e9e1501135fe91254ba884fcbd83d374c0">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/com.android.support.test.espresso-espresso-core-2.2.2_69d32d697e035a4b1b528933474b9254e998378b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support.test/exposed-instrumentation-api-publish/0.5/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="905f3e63973d47fedf2d945fa31d8c0f0c98816e">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/com.android.support.test-exposed-instrumentation-api-publish-0.5_dcf1846fc1164f168459aba9746645cc48da14ce.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-integration/1.3/5de0c73fef18917cd85d0ab70bb23818685e4dfd/hamcrest-integration-1.3.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="5de0c73fef18917cd85d0ab70bb23818685e4dfd">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/hamcrest-integration-1.3_a22ad421fe0f0a407f2144ea6d4d21731c0f85ec.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="f02263e35e52668dd17b73bf961437e3d562b35f">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-media-compat-25.1.0_3b848b962835295b65fe11cf00dd393a69a2ac61.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support.test/rules/0.5/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="7e11799d8a26bfa5d48acafe012ee5545b9bf468">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/com.android.support.test-rules-0.5_36eb1e9930edf65031b0d257b6a88c7298f85b84.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0a0ef86b7fa568a52bf6214a0326ca1f1d618da7">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-core-utils-25.1.0_c4aeb31e7e5bb2a6d7368a4290c487029c8146d6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-library/1.3/4785a3c21320980282f9f33d0d1264a69040538f/hamcrest-library-1.3.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4785a3c21320980282f9f33d0d1264a69040538f">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/hamcrest-library-1.3_620f7694e8e15b41d27b16180d5f75a2e078dd2f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support.test/runner/0.5/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="796f9229948e907471c5595fbe94655ccf03ff73">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/androidTest/debug/com.android.support.test-runner-0.5_d43e89ca5bde4246b1d38c2983325d5dd767949b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/exploded-aar/com.android.support/support-fragment/25.1.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="2a53c4f3518116b8c6aee0e477233f0f7da8616f">
+        <dex dex="/home/alumnos/javsan/AndroidStudioProjects/Miner/app/build/intermediates/pre-dexed/debug/com.android.support-support-fragment-25.1.0_a8f7c833662a4710d37dc1feda228d6b70444084.jar" />
+    </item>
+
+</items>

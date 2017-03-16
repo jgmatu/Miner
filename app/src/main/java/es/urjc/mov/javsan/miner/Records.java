@@ -18,7 +18,7 @@ import java.util.HashMap;
 class Records {
     public static final int TOP = 10;
 
-    private static final String fileRecords = "records.txt";
+    public static final String fileRecords = "records.txt";
 
     private FragmentActivity activity;
     private HashMap<String, Integer> scores;

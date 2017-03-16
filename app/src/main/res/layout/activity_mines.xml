@@ -38,7 +38,7 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.7"
+        android:layout_weight="0.88"
         android:orientation="horizontal">
     </TableLayout>
 
@@ -47,7 +47,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.20">
+        android:layout_weight="0.12">
 
         <Button
             android:id="@+id/buton_radar"
